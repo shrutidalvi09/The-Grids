@@ -152,9 +152,6 @@ Future<void> showHouseholdForm(BuildContext context, WidgetRef ref, {HouseholdMe
       return member == null ? repo.addHouseholdMember(input) : repo.updateHouseholdMember(member.id, input);
     },
   );
-  name.dispose();
-  relation.dispose();
-  phone.dispose();
   if (saved == true) {
     ref.invalidate(householdProvider);
     messenger.showSnackBar(SnackBar(content: Text(member == null ? l10n.memberAdded : l10n.memberSaved)));

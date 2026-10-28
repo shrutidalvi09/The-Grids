@@ -27,6 +27,12 @@ export interface Env {
    * it, notifications are still saved in-app and pushes are only logged.
    */
   firebaseServiceAccountFile: string | null;
+  /**
+   * Reverse proxies / load balancers in front of the API (Express "trust
+   * proxy" hop count). Needed in production so rate limits see the client's
+   * IP rather than the proxy's; 0 when clients connect directly.
+   */
+  trustProxyHops: number;
 }
 
 export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
@@ -91,6 +97,7 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     receiptsDir: source.RECEIPTS_DIR?.trim() || 'storage/receipts',
     razorpay: keyId ? { keyId, keySecret, webhookSecret } : null,
     firebaseServiceAccountFile: source.FIREBASE_SERVICE_ACCOUNT_FILE?.trim() || null,
+    trustProxyHops: (source.TRUST_PROXY_HOPS ?? '0').trim() === '0' ? 0 : int('TRUST_PROXY_HOPS', 0),
   };
 
   if (errors.length) {

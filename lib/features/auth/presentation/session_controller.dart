@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../../core/network/offline_cache.dart';
 import '../../notifications/data/push_service.dart';
 import '../data/auth_providers.dart';
 import '../domain/session.dart';
@@ -39,6 +40,8 @@ class SessionController extends Notifier<SessionState> {
     // While still authenticated, so the server forgets this phone's push token.
     await ref.read(pushServiceProvider).stop();
     await ref.read(authRepositoryProvider).signOut();
+    // Shared phones: the next person must not see this person's saved data.
+    await ref.read(responseCacheProvider).clear();
     state = const SignedOut();
   }
 
@@ -50,6 +53,7 @@ class SessionController extends Notifier<SessionState> {
   /// The server ended the session (refresh token revoked or expired).
   void expire() {
     if (state is SignedIn) state = const SignedOut(expired: true);
+    unawaited(ref.read(responseCacheProvider).clear());
   }
 }
 

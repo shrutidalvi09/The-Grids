@@ -112,7 +112,9 @@ class _NotificationTile extends ConsumerWidget {
         ref.invalidate(notificationsProvider);
       }
       final route = role == null ? null : routeForNotification(n.type, n.data, role);
-      if (route != null && context.mounted) context.push(route);
+      // `go`, not `push`: the target lives inside a bottom-nav tab, and pushing
+      // a tab page over this full-screen route confuses the navigators.
+      if (route != null && context.mounted) context.go(route);
     }
 
     return Semantics(

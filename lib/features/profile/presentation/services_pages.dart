@@ -238,9 +238,6 @@ Future<void> _showAddService(BuildContext context, WidgetRef ref) async {
           location: location.text.trim().isEmpty ? null : location.text.trim(),
         ),
   );
-  for (final c in [category, name, phone, location]) {
-    c.dispose();
-  }
   if (added == true) {
     ref.invalidate(servicesProvider);
     messenger.showSnackBar(SnackBar(content: Text(l10n.serviceAdded)));

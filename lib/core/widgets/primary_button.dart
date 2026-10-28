@@ -22,7 +22,7 @@ class PrimaryButton extends StatelessWidget {
     final child = isLoading
         ? SizedBox.square(
             dimension: 24,
-            child: CircularProgressIndicator(strokeWidth: 2.5, color: scheme.onSecondary),
+            child: CircularProgressIndicator(strokeWidth: 2.5, color: scheme.onSecondaryContainer),
           )
         : Text(label);
 

@@ -84,6 +84,22 @@ void main() {
       }
     });
 
+    test('household and payment settings are for residents; the lease page for tenants', () {
+      for (final path in [AppRoutes.household, AppRoutes.paymentSettings]) {
+        expect(resolveRedirect(location: path, session: _as(UserRole.owner)), isNull, reason: path);
+        expect(resolveRedirect(location: path, session: _as(UserRole.tenant)), isNull, reason: path);
+        expect(resolveRedirect(location: path, session: _as(UserRole.admin)), AppRoutes.home, reason: path);
+      }
+      expect(resolveRedirect(location: AppRoutes.leaseInfo, session: _as(UserRole.tenant)), isNull);
+      expect(resolveRedirect(location: AppRoutes.leaseInfo, session: _as(UserRole.owner)), AppRoutes.home);
+      expect(resolveRedirect(location: AppRoutes.tenantForm, session: _as(UserRole.tenant)), AppRoutes.home);
+      for (final role in UserRole.values) {
+        for (final path in [AppRoutes.services, AppRoutes.account, AppRoutes.notificationSettings, AppRoutes.help, AppRoutes.about]) {
+          expect(resolveRedirect(location: path, session: _as(role)), isNull, reason: '$role $path');
+        }
+      }
+    });
+
     test('tenant info is owner-only', () {
       const path = AppRoutes.tenantInfo;
       expect(resolveRedirect(location: path, session: _as(UserRole.owner)), isNull);

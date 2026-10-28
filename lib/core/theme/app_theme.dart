@@ -13,8 +13,12 @@ abstract final class AppTheme {
         ).copyWith(
           primary: AppColors.green,
           onPrimary: AppColors.white,
-          secondary: AppColors.orange,
+          // Text/icon orange; fills (buttons, badges) use the brand orange
+          // container with dark text so both meet WCAG AA contrast.
+          secondary: AppColors.orangeText,
           onSecondary: AppColors.white,
+          secondaryContainer: AppColors.orange,
+          onSecondaryContainer: AppColors.ink,
           surface: AppColors.white,
           onSurface: AppColors.ink,
           surfaceContainerHighest: AppColors.cardLight,
@@ -34,6 +38,8 @@ abstract final class AppTheme {
           onPrimary: AppColors.ink,
           secondary: AppColors.orangeLight,
           onSecondary: AppColors.ink,
+          secondaryContainer: AppColors.orangeLight,
+          onSecondaryContainer: AppColors.ink,
           surface: AppColors.surfaceDark,
           onSurface: const Color(0xFFE8ECEE),
           surfaceContainerHighest: AppColors.cardDark,
@@ -83,8 +89,8 @@ abstract final class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: scheme.secondary,
-          foregroundColor: scheme.onSecondary,
+          backgroundColor: scheme.secondaryContainer,
+          foregroundColor: scheme.onSecondaryContainer,
           minimumSize: const Size.fromHeight(56),
           shape: const StadiumBorder(),
           textStyle: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),

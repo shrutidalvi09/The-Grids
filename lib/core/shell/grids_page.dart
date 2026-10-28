@@ -98,9 +98,17 @@ class NotificationBell extends ConsumerWidget {
       onPressed: () => context.push(AppRoutes.notifications),
       icon: Badge(
         isLabelVisible: count > 0,
-        backgroundColor: scheme.secondary,
-        textColor: scheme.onSecondary,
-        label: Text(count > 9 ? '9+' : '$count'),
+        backgroundColor: scheme.secondaryContainer,
+        textColor: scheme.onSecondaryContainer,
+        // The number pops when it changes (e.g. after reading a notification).
+        label: AnimatedSwitcher(
+          duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 250),
+          transitionBuilder: (child, animation) => ScaleTransition(
+            scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+            child: FadeTransition(opacity: animation, child: child),
+          ),
+          child: Text(count > 9 ? '9+' : '$count', key: ValueKey(count)),
+        ),
         child: const Icon(Icons.notifications_rounded),
       ),
     );

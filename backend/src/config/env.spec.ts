@@ -12,6 +12,13 @@ describe('loadEnv', () => {
     expect(loadEnv(valid)).toMatchObject({ port: 3000, jwtAccessTtlSeconds: 900, refreshTokenTtlDays: 30, otpDevEcho: false });
   });
 
+  it('reads the proxy hop count, defaulting to none', () => {
+    expect(loadEnv(valid).trustProxyHops).toBe(0);
+    expect(loadEnv({ ...valid, TRUST_PROXY_HOPS: '0' }).trustProxyHops).toBe(0);
+    expect(loadEnv({ ...valid, TRUST_PROXY_HOPS: '1' }).trustProxyHops).toBe(1);
+    expect(() => loadEnv({ ...valid, TRUST_PROXY_HOPS: 'yes' })).toThrow(/TRUST_PROXY_HOPS/);
+  });
+
   it('lists every problem at once', () => {
     const error = (() => {
       try {

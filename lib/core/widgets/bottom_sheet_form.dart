@@ -6,7 +6,11 @@ import '../theme/app_spacing.dart';
 import 'primary_button.dart';
 
 /// A modal bottom sheet holding a validated form with a title, close button
-/// and submit button. Closes itself after [onSubmit] completes.
+/// and submit button. Closes itself after [onSubmit] completes; errors from
+/// [onSubmit] are shown in the sheet.
+///
+/// Don't dispose the fields' controllers when [show] returns: the sheet is
+/// still animating closed and rebuilding them. Let them be garbage collected.
 ///
 /// ```dart
 /// await BottomSheetForm.show(

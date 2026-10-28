@@ -57,11 +57,16 @@ class FcmPushService implements PushService {
       final permission = await messaging.requestPermission();
       if (permission.authorizationStatus == AuthorizationStatus.denied) return;
 
+      // FCM registration tokens are what the server's Admin SDK multicast send
+      // targets; the newer FID "direct send" (register/onRegistered) isn't
+      // wired up server-side yet.
+      // ignore: deprecated_member_use
       _token = await messaging.getToken();
       if (_token != null) await _repo.registerDevice(_token!, Platform.isIOS ? 'ios' : 'android');
 
       await _cancelSubscriptions();
       _subscriptions
+        // ignore: deprecated_member_use
         ..add(messaging.onTokenRefresh.listen((token) {
           _token = token;
           unawaited(_repo.registerDevice(token, Platform.isIOS ? 'ios' : 'android').catchError((_) {}));

@@ -27,7 +27,7 @@ class StatsGrid extends StatelessWidget {
       (l10n.statFlats, stats.flats, null),
       (l10n.statOwners, stats.owners, null),
       (l10n.statTenants, stats.tenants, null),
-      (l10n.statDues, stats.pendingDues, () => context.go(AppRoutes.maintenance)),
+      (l10n.statDues, stats.pendingDues, () => context.go(AppRoutes.defaulters)),
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_call.dart';
-import '../../auth/data/auth_dto.dart';
+import '../../auth/data/auth_dto.dart' show sessionFromMeJson;
 import '../../auth/data/auth_providers.dart';
 import '../../auth/domain/session.dart';
 import '../../maintenance/domain/money_models.dart';

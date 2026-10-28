@@ -638,7 +638,6 @@
   "tryAgain": "Try again",
   "updateMaintenance": "Update Maintenance",
   "vendorLabel": "Vendor",
-  "viewBreakdown": "View Breakdown",
   "addAnnouncement": "Add Announcement",
   "addMembers": "Add members",
   "addOption": "Add option",
@@ -792,5 +791,184 @@
   },
   "voteRecorded": "Thanks for voting!",
   "yourVote": "your vote",
-  "youVotedForLabel": "You voted for: "
+  "youVotedForLabel": "You voted for: ",
+  "aboutNoAadhaar": "We never ask for your Aadhaar number.",
+  "aboutNoCards": "Card and UPI details are handled by Razorpay and never stored in the app.",
+  "aboutOtpOnly": "Sign in with a one-time code — no passwords.",
+  "aboutPrivacy": "Residents see only their own flat's dues and payments.",
+  "accountDeleted": "Your account has been deleted.",
+  "accountOptionsTitle": "Account Options",
+  "addMember": "Add Member",
+  "addService": "Add Service",
+  "addTenant": "Add Tenant",
+  "areaOptionalField": "Area (optional)",
+  "callPerson": "Call {name}",
+  "@callPerson": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotCall": "This device can't make calls.",
+  "contactsCount": "{count, plural, =1{1 contact} other{{count} contacts}}",
+  "@contactsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dangerZone": "Delete account",
+  "deleteAccount": "Delete my account",
+  "deleteAccountConfirmBody": "Your name, phone number, email and photo will be erased and you will be signed out of every society. Payment records stay for the society's accounts. This can't be undone.",
+  "deleteAccountConfirmTitle": "Delete your account?",
+  "deleteAccountHint": "Permanently remove your personal details from The Grids.",
+  "depositLabel": "Security deposit",
+  "editMember": "Edit Member",
+  "editProfile": "Edit Profile",
+  "editRentTerms": "Edit rent terms",
+  "emailField": "Email",
+  "emailOptionalField": "Email (optional)",
+  "endTenancy": "End tenancy",
+  "endTenancyConfirmBody": "They will lose access to the flat in the app straight away.",
+  "endTenancyConfirmTitle": "End {name}'s tenancy?",
+  "@endTenancyConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAlreadyMember": "This number is already registered for that role.",
+  "errorLastAdmin": "You're the only admin of this society. Make someone else an admin first.",
+  "errorTenancyExists": "This flat already has a tenant. End that tenancy first.",
+  "faqLanguageA": "Go to Profile → Language and pick from 8 Indian languages.",
+  "faqLanguageQ": "How do I change the language?",
+  "faqLoginA": "Sign in with your mobile number and the one-time code we send by SMS. If it says you're not registered, ask your society office to add you.",
+  "faqLoginQ": "I can't sign in",
+  "faqNotificationsA": "Go to Profile → Notification Preferences to choose which updates you get.",
+  "faqNotificationsQ": "How do I control notifications?",
+  "faqPayA": "Open the Maintenance (or Rent) tab and tap Pay Now. You can pay with UPI (Google Pay, PhonePe), a card or net banking through Razorpay.",
+  "faqPayQ": "How do I pay maintenance or rent?",
+  "faqReceiptA": "Every successful payment has a receipt. Open Payment History and tap a payment to download or share the PDF.",
+  "faqReceiptQ": "Where are my receipts?",
+  "faqTenantA": "Owners can go to Profile → Tenant Info → Add Tenant and enter the tenant's mobile number and rent. The tenant then signs in with that number.",
+  "faqTenantQ": "How do I add my tenant?",
+  "faqTitle": "Frequently asked questions",
+  "householdTitle": "Household Members",
+  "languageSaved": "Language updated",
+  "leaseDetailsTitle": "Lease details",
+  "leaseEndLabel": "Lease ends",
+  "leaseInfoTitle": "Owner & Lease",
+  "leaseOpenEnded": "Not set",
+  "leaseStartLabel": "Lease starts",
+  "logoutConfirm": "Log out of The Grids?",
+  "markAllRead": "Mark all as read",
+  "memberActions": "Member options",
+  "memberAdded": "Member added",
+  "memberSaved": "Member updated",
+  "methodUpiLong": "UPI (Google Pay, PhonePe…)",
+  "mobileOptionalField": "Mobile number (optional)",
+  "monthlyRentLabel": "Monthly rent",
+  "nameField": "Name",
+  "noHousehold": "No household members yet",
+  "noHouseholdHint": "Add the people who live in your flat so security knows them.",
+  "noLease": "No lease on record",
+  "noLeaseHint": "Ask your owner to add you from their Tenant Info screen.",
+  "noPreference": "No preference",
+  "noServices": "No services listed yet",
+  "noTenant": "No tenant yet",
+  "noTenantHint": "Add your tenant with their mobile number. They sign in with a one-time code — no passwords or Aadhaar needed.",
+  "notificationPrefsHint": "Choose which updates you'd like to receive.",
+  "notificationPrefsTitle": "Notification Preferences",
+  "openSourceLicences": "Open-source licences",
+  "ownerLabel": "Owner",
+  "paymentMethodSaved": "Payment preference saved",
+  "paymentSettingsTitle": "Payment Settings",
+  "payRentHint": "Pay rent from the Rent tab. Receipts are in Payment History.",
+  "phoneField": "Phone",
+  "phoneIsLoginHint": "Your mobile number is your login and can't be changed here.",
+  "prefAnnouncements": "Announcements & polls",
+  "prefComplaintUpdates": "Complaint updates",
+  "prefEmergencyAlerts": "Emergency alerts",
+  "preferencesSaved": "Preferences saved successfully",
+  "preferredMethodHint": "Choose the payment method to show first when you pay. You can still pick another at checkout.",
+  "prefEventsNotices": "Events & notices",
+  "prefGroupApp": "App notifications",
+  "prefGroupPayments": "Payment & Maintenance",
+  "prefGroupServices": "Services",
+  "prefGroupSociety": "Society Updates",
+  "prefMaintenanceDue": "Maintenance due alert",
+  "prefPackageDelivery": "Package delivery",
+  "prefPaymentReminder": "Payment reminder",
+  "prefPaymentSuccess": "Payment success",
+  "prefPush": "Push notifications",
+  "prefStaffAttendance": "Staff attendance",
+  "prefVisitorArrival": "Visitor arrival",
+  "profileSaved": "Profile updated",
+  "relationField": "Relation",
+  "relationHint": "e.g. Wife, Son, Mother",
+  "remove": "Remove",
+  "removeMemberConfirm": "Remove {name}?",
+  "@removeMemberConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removeServiceConfirm": "Remove {name} from the directory?",
+  "@removeServiceConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rentBreakdownHint": "Rent items only (rent, parking…). Maintenance is billed separately.",
+  "rentBreakdownTitle": "Rent breakdown",
+  "rentDueDayLabel": "Rent due every month on",
+  "rentItemHint": "e.g. Rent, Parking",
+  "rentTermsSaved": "Rent terms saved",
+  "roleField": "Role",
+  "savedMethodsNote": "Saved cards and UPI IDs are kept securely by Razorpay, never in The Grids.",
+  "savePreferences": "Save Preferences",
+  "serviceAdded": "Service added",
+  "serviceBabysitter": "Babysitter",
+  "serviceCarpenter": "Carpenter",
+  "serviceCategoryHint": "e.g. Maid, Plumber",
+  "serviceCook": "Cook",
+  "serviceDoctor": "Doctor",
+  "serviceDriver": "Driver",
+  "serviceElectrician": "Electrician",
+  "serviceGym": "Gym",
+  "serviceLaundry": "Laundry",
+  "serviceMaid": "Maid",
+  "serviceMilkman": "Milkman",
+  "serviceNewspaper": "Newspaper",
+  "servicePlumber": "Plumber",
+  "servicesTitle": "Services",
+  "societyOfficeTitle": "Society office",
+  "tenancyEnded": "Tenancy ended",
+  "tenantActive": "Signed in",
+  "tenantAdded": "Tenant added. They can now sign in with their mobile number.",
+  "tenantInfoTitle": "Tenant Info",
+  "tenantInvited": "Hasn't signed in yet",
+  "tenantInviteHint": "They'll sign in with this number using a one-time code.",
+  "tenantLabel": "Tenant",
+  "tenantNameField": "Tenant's name",
+  "tenantRemoved": "Removed",
+  "unreadLabel": "Unread",
+  "validationEmail": "Enter a valid email address",
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "offlineBanner": "You're offline — showing saved data",
+  "costBreakdown": "Cost breakdown"
 }

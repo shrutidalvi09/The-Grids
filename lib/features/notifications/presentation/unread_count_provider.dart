@@ -16,11 +16,12 @@ class UnreadCount extends Notifier<int> {
   @override
   int build() {
     final signedIn = ref.watch(sessionKeyProvider) != null;
-    _timer?.cancel();
-    _lifecycle?.dispose();
+    // Runs before every rebuild (sign-in/out, role switch) and on disposal.
     ref.onDispose(() {
       _timer?.cancel();
       _lifecycle?.dispose();
+      _timer = null;
+      _lifecycle = null;
     });
     if (!signedIn) return 0;
     final every = ref.watch(unreadPollIntervalProvider);

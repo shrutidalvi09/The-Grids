@@ -9,6 +9,10 @@ abstract final class AppColors {
   static const orange = Color(0xFFF57C00);
   static const orangeLight = Color(0xFFFFB74D);
 
+  /// Orange for text and icons on light backgrounds (5:1 on white). The
+  /// brand orange is too light for text, so it's used for fills with dark text.
+  static const orangeText = Color(0xFFA54E00);
+
   // Neutrals
   static const slate = Color(0xFF455A64);
   static const ink = Color(0xFF1B1F23);

@@ -30,7 +30,7 @@ class _TheGridsAppState extends ConsumerState<TheGridsApp> {
     _opened = ref.read(pushServiceProvider).opened.listen((data) {
       final session = ref.read(currentSessionProvider);
       final route = session == null ? null : routeForNotification(data['type'] ?? '', data, session.role);
-      if (route != null) ref.read(routerProvider).push(route);
+      if (route != null) ref.read(routerProvider).go(route);
     });
   }
 

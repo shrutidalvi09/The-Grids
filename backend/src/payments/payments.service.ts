@@ -185,6 +185,7 @@ export class PaymentsService {
     if (!(this.gateway instanceof SimulatedGateway)) throw ApiError.notFound();
     const payment = await this.prisma.payment.findFirst({ where: { id: paymentId, payerId: auth.userId } });
     if (!payment?.razorpayOrderId) throw ApiError.notFound('Payment not found');
+    if (payment.status === 'SUCCEEDED') throw new ApiError(HttpStatus.CONFLICT, 'DUE_NOT_PENDING', 'Already paid');
     if (outcome === 'failure') {
       await this.prisma.payment.update({
         where: { id: payment.id },

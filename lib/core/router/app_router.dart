@@ -48,6 +48,7 @@ import '../../features/tower/presentation/notices_page.dart';
 import '../../features/tower/presentation/post_complaint_page.dart';
 import '../../features/tower/presentation/tower_page.dart';
 import '../../features/tower/presentation/visitors_page.dart';
+import '../shell/animated_branch_container.dart';
 import '../shell/app_shell.dart';
 import '../shell/not_found_page.dart';
 import 'route_guard.dart';
@@ -97,8 +98,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      StatefulShellRoute.indexedStack(
+      StatefulShellRoute(
         builder: (context, state, shell) => AppShell(navigationShell: shell),
+        // Keeps every tab's state like indexedStack, but cross-fades between them.
+        navigatorContainerBuilder: (context, shell, children) =>
+            AnimatedBranchContainer(currentIndex: shell.currentIndex, children: children),
         branches: [
           _tab(AppRoutes.home, const HomePage()),
           _tab(AppRoutes.tower, const TowerPage(), routes: _towerRoutes),
@@ -228,11 +232,8 @@ final _profileRoutes = <RouteBase>[
   GoRoute(path: 'language', builder: (_, _) => const LanguageSettingsPage()),
   GoRoute(path: 'notifications', builder: (_, _) => const NotificationSettingsPage()),
   GoRoute(path: 'theme', builder: (_, _) => const ThemeSettingsPage()),
-  GoRoute(
-    path: 'account',
-    builder: (_, _) => const AccountPage(),
-    routes: [GoRoute(path: 'edit', builder: (_, _) => const EditProfilePage())],
-  ),
+  GoRoute(path: 'account', builder: (_, _) => const AccountPage()),
+  GoRoute(path: 'edit', builder: (_, _) => const EditProfilePage()),
   GoRoute(path: 'lease', builder: (_, _) => const LeaseInfoPage()),
   // Owners only (see restrictedRoutes). Editing passes the tenancy as `extra`.
   GoRoute(

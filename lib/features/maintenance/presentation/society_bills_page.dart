@@ -98,9 +98,6 @@ class _SocietyBillsPageState extends ConsumerState<SocietyBillsPage> {
             dueDate: dueDate,
           ),
     );
-    vendor.dispose();
-    category.dispose();
-    amount.dispose();
     if (added == true) {
       ref.invalidate(societyBillsProvider);
       if (mounted) {

@@ -86,13 +86,15 @@ class CommunityCard extends StatelessWidget {
                     ),
                   ),
                   if (community.isMember) StatusChip(label: l10n.joined, tone: StatusTone.success),
+                  // The whole card opens the club; the chevron says so.
+                  Icon(Icons.chevron_right_rounded, color: grids.slate),
                 ],
               ),
             ),
             if (latest != null) ...[
               const Divider(height: 1),
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -121,16 +123,6 @@ class CommunityCard extends StatelessWidget {
                 ),
               ),
             ],
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, AppSpacing.md, AppSpacing.sm),
-                child: Text(
-                  l10n.viewAll,
-                  style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.secondary),
-                ),
-              ),
-            ),
           ],
         ),
       ),

@@ -23,7 +23,11 @@ class VisitorTile extends StatelessWidget {
     return ListTile(
       leading: Icon(visitorIcon(v.type)),
       title: Text(title),
-      subtitle: Text([?time, if (showFlat) ?v.flatLabel].join(' · ')),
+      // No empty second line when there's no time yet (keeps the name centred).
+      subtitle: switch ([?time, if (showFlat) ?v.flatLabel]) {
+        [] => null,
+        final parts => Text(parts.join(' · ')),
+      },
       trailing: visitorStatusChip(l10n, v.status),
     );
   }
@@ -121,8 +125,10 @@ class EventCard extends StatelessWidget {
                 height: 96,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
+                  // Fixed deep brand colours in both themes so the white title
+                  // stays readable (the dark theme's primary/secondary are pale).
+                  gradient: const LinearGradient(
+                    colors: [AppColors.greenDark, AppColors.orangeText],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),

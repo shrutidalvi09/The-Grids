@@ -63,7 +63,8 @@ export async function resetDatabase(prisma: PrismaService): Promise<void> {
     await tx.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 0');
     for (const { name } of tables) await tx.$executeRawUnsafe(`TRUNCATE TABLE \`${name}\``);
     await tx.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1');
-  });
+    // ~30 TRUNCATEs can exceed Prisma's 5 s default on a busy machine.
+  }, { timeout: 30_000 });
 }
 
 /** A small society: 1 tower, 2 flats, an admin, an owner and a tenant. */

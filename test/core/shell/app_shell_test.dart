@@ -44,9 +44,13 @@ void main() {
 
     await tester.tap(find.bySemanticsLabel('Profile'));
     await tester.pumpAndSettle();
-    expect(find.text('Role: Tenant'), findsOneWidget);
-    expect(find.text('Role: Owner'), findsNothing);
-    expect(find.text('+919000000001'), findsOneWidget);
+    expect(find.text('Role: Tenant', findRichText: true), findsOneWidget);
+    expect(find.text('Role: Owner', findRichText: true), findsNothing);
+    expect(find.text('Phone: +91 90000 00001', findRichText: true), findsOneWidget);
+    // Tenants see their owner and lease, never Tenant Info.
+    await tester.scrollUntilVisible(find.text('Owner & Lease'), 200);
+    expect(find.text('Owner & Lease'), findsOneWidget);
+    expect(find.text('Tenant Info'), findsNothing);
   });
 
   testWidgets('hamburger opens the drawer; logout signs out and returns to sign-in', (tester) async {
@@ -67,7 +71,7 @@ void main() {
   testWidgets('bell shows an unread badge and opens Notifications', (tester) async {
     final container = await pumpGridsApp(
       tester,
-      overrides: [unreadNotificationCountProvider.overrideWithValue(3)],
+      overrides: [unreadNotificationCountProvider.overrideWith(() => _FixedUnread(3))],
     );
     await signInAs(tester, container, UserRole.owner);
 
@@ -86,11 +90,13 @@ void main() {
 
     await tester.tap(find.bySemanticsLabel('Profile'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Language'));
+    await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.text('हिन्दी'), 200);
     await tester.tap(find.text('हिन्दी'));
     await tester.pumpAndSettle();
 
-    expect(_appBarTitle('प्रोफ़ाइल'), findsOneWidget);
+    expect(_appBarTitle('भाषा'), findsOneWidget);
     expect(find.bySemanticsLabel('किराया'), findsOneWidget);
     expect(container.read(sharedPreferencesProvider).getString(PrefKeys.languageCode), 'hi');
   });
@@ -100,6 +106,9 @@ void main() {
     await signInAs(tester, container, UserRole.owner);
 
     await tester.tap(find.bySemanticsLabel('Profile'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('Theme'), 200);
+    await tester.tap(find.text('Theme'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Dark'));
     await tester.pumpAndSettle();
@@ -127,4 +136,16 @@ void main() {
 
     await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
   });
+}
+
+class _FixedUnread extends UnreadCount {
+  _FixedUnread(this.count);
+
+  final int count;
+
+  @override
+  int build() => count;
+
+  @override
+  Future<void> refresh() async {}
 }

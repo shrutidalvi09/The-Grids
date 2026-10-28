@@ -48,7 +48,7 @@ abstract final class AppRoutes {
   static const notificationSettings = '/profile/notifications';
   static const themeSettings = '/profile/theme';
   static const account = '/profile/account';
-  static const editProfile = '/profile/account/edit';
+  static const editProfile = '/profile/edit';
   static const leaseInfo = '/profile/lease'; // tenants: owner contact + lease
 
   // Role-restricted sections

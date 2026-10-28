@@ -66,6 +66,7 @@ Checkout checkoutFromJson(Json j) {
     prefillName: prefill['name'] as String,
     prefillContact: prefill['contact'] as String,
     prefillEmail: prefill['email'] as String?,
+    prefillMethod: prefill['method'] as String?,
   );
 }
 

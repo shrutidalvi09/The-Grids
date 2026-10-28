@@ -12,3 +12,10 @@ node_modules
 
 # Generated receipts (dev storage)
 /storage
+
+# Firebase service-account keys (keep outside the repo; this is a safety net)
+*service-account*.json
+*firebase-adminsdk*.json
+
+# TypeScript incremental build cache
+*.tsbuildinfo

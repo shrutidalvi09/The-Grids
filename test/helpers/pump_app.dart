@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_grids/app.dart';
 import 'package:the_grids/core/config/app_config.dart';
+import 'package:the_grids/core/network/offline_cache.dart';
 import 'package:the_grids/core/storage/preferences.dart';
 import 'package:the_grids/features/auth/data/auth_providers.dart';
 import 'package:the_grids/features/auth/domain/session.dart';
@@ -17,12 +18,16 @@ import 'package:the_grids/features/home/data/home_repository.dart';
 import 'package:the_grids/features/maintenance/data/checkout_launcher.dart';
 import 'package:the_grids/features/maintenance/data/money_repository.dart';
 import 'package:the_grids/features/maintenance/data/receipt_files.dart';
+import 'package:the_grids/features/notifications/data/notifications_repository.dart';
+import 'package:the_grids/features/notifications/presentation/unread_count_provider.dart';
+import 'package:the_grids/features/profile/data/profile_repository.dart';
 import 'package:the_grids/features/tower/data/tower_repository.dart';
 
 import 'community_fakes.dart';
 import 'fakes.dart';
 import 'feature_fakes.dart';
 import 'money_fakes.dart';
+import 'profile_fakes.dart';
 
 /// Pumps the full app (router, theme, l10n) with a [FakeAuthRepository] and
 /// returns its container so tests can drive providers directly.
@@ -36,6 +41,8 @@ Future<ProviderContainer> pumpGridsApp(
   FakeCheckoutLauncher? checkout,
   FakeReceiptFiles? receipts,
   FakeCommunityRepository? community,
+  FakeProfileRepository? profile,
+  FakeNotificationsRepository? notifications,
   Flavor flavor = Flavor.prod,
   List<Override> overrides = const [],
   Map<String, Object> prefs = const {},
@@ -62,6 +69,11 @@ Future<ProviderContainer> pumpGridsApp(
       checkoutLauncherProvider.overrideWithValue(checkout ?? FakeCheckoutLauncher()),
       receiptFilesProvider.overrideWithValue(receipts ?? FakeReceiptFiles()),
       communityRepositoryProvider.overrideWithValue(community ?? FakeCommunityRepository()),
+      profileRepositoryProvider.overrideWithValue(profile ?? FakeProfileRepository()),
+      notificationsRepositoryProvider.overrideWithValue(notifications ?? FakeNotificationsRepository()),
+      responseCacheProvider.overrideWithValue(MemoryResponseCache()),
+      // No periodic badge refresh (pending timers fail widget tests).
+      unreadPollIntervalProvider.overrideWithValue(null),
       ...overrides,
     ],
   );

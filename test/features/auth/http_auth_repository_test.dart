@@ -80,7 +80,25 @@ void main() {
       expect(await storedRefresh(), isNull);
     });
 
-    test('offline keeps the token and reports a network error', () async {
+    test('offline after a previous sign-in opens with the saved profile', () async {
+      handler = (o) => (200, sessionJson());
+      await repo.verifyOtp(challengeId: 'c1', code: '123456');
+
+      handler = (o) => throw offline(o);
+      final session = await repo.restoreSession();
+      expect(session!.displayName, 'Shruti Chetan Dalvi');
+      expect(session.role, UserRole.owner);
+      expect(await storedRefresh(), 'r1'); // refreshes once back online
+    });
+
+    test('signing out forgets the saved profile too', () async {
+      handler = (o) => (200, sessionJson());
+      await repo.verifyOtp(challengeId: 'c1', code: '123456');
+      await repo.signOut();
+      expect(await storage.read(key: 'auth.profile'), isNull);
+    });
+
+    test('offline with no saved profile keeps the token and reports a network error', () async {
       await storage.write(key: 'auth.refreshToken', value: 'r1');
       handler = (o) => throw offline(o);
 

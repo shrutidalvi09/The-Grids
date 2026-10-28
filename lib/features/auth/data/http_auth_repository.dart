@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 
 import '../../../core/network/api_exception.dart';
@@ -58,7 +60,13 @@ class HttpAuthRepository implements AuthRepository {
     try {
       return await _refresh();
     } on ApiException catch (e) {
-      if (e.code == ApiException.network) rethrow; // keep the token; retry later
+      if (e.code == ApiException.network) {
+        // Offline at launch: open with the last known profile; screens show
+        // cached data and the session refreshes on the first request online.
+        final saved = await _tokens.readProfile();
+        if (saved != null) return sessionFromMeJson(jsonDecode(saved) as Json);
+        rethrow; // keep the token; retry later
+      }
       await _tokens.clear();
       return null;
     }
@@ -118,7 +126,9 @@ class HttpAuthRepository implements AuthRepository {
       accessToken: body['accessToken'] as String,
       refreshToken: body['refreshToken'] as String,
     );
-    return sessionFromMeJson(body['me'] as Json);
+    final me = body['me'] as Json;
+    await _tokens.saveProfile(jsonEncode(me));
+    return sessionFromMeJson(me);
   }
 
   Future<T> _call<T>(Future<T> Function() request) async {

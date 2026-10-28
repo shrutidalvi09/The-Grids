@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../data/receipt_files.dart';
 import '../../domain/money_models.dart';
 
 /// "October 2026" in the user's language.
@@ -36,7 +39,7 @@ class BreakdownCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SectionHeader(title: title ?? l10n.viewBreakdown, icon: Icons.receipt_rounded),
+        SectionHeader(title: title ?? l10n.costBreakdown, icon: Icons.receipt_rounded),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -120,20 +123,44 @@ class DueCard extends StatelessWidget {
   }
 }
 
-/// A paid month in the history; tapping opens the receipt.
-class PaymentRow extends StatelessWidget {
+/// A paid month in the history: tapping opens the receipt, the download
+/// button saves and opens the PDF straight away.
+class PaymentRow extends ConsumerStatefulWidget {
   const PaymentRow({super.key, required this.payment, required this.onTap});
 
   final Payment payment;
   final VoidCallback onTap;
 
   @override
+  ConsumerState<PaymentRow> createState() => _PaymentRowState();
+}
+
+class _PaymentRowState extends ConsumerState<PaymentRow> {
+  bool _downloading = false;
+
+  Future<void> _download() async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _downloading = true);
+    try {
+      final opened = await ref.read(receiptFilesProvider).download(widget.payment.id);
+      if (!opened) messenger.showSnackBar(SnackBar(content: Text(l10n.noPdfViewer)));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(describeError(l10n, e))));
+    } finally {
+      if (mounted) setState(() => _downloading = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final grids = GridsColors.of(context);
+    final payment = widget.payment;
     return ListTile(
-      onTap: onTap,
+      onTap: widget.onTap,
+      contentPadding: const EdgeInsets.only(left: AppSpacing.lg, right: AppSpacing.xs),
       leading: Icon(Icons.receipt_long_rounded, color: grids.success),
       title: Text(formatPaise(payment.amountPaise), style: theme.textTheme.titleMedium),
       subtitle: Text(
@@ -142,7 +169,16 @@ class PaymentRow extends StatelessWidget {
           if (payment.paidAt != null) l10n.paidOn(formatDayMonth(context, payment.paidAt!)),
         ].join(' · '),
       ),
-      trailing: Icon(Icons.download_rounded, semanticLabel: l10n.receiptTitle),
+      trailing: _downloading
+          ? const SizedBox.square(
+              dimension: AppSpacing.minTapTarget,
+              child: Padding(padding: EdgeInsets.all(14), child: CircularProgressIndicator(strokeWidth: 2)),
+            )
+          : IconButton(
+              tooltip: l10n.downloadPdf,
+              onPressed: _download,
+              icon: Icon(Icons.download_rounded, color: grids.success),
+            ),
     );
   }
 }

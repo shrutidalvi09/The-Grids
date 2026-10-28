@@ -26,7 +26,7 @@ class StatCard extends StatelessWidget {
       label: '$label: $value',
       excludeSemantics: true,
       child: Material(
-        color: scheme.secondary,
+        color: scheme.secondaryContainer,
         borderRadius: const BorderRadius.all(AppRadii.lg),
         elevation: 1,
         child: InkWell(
@@ -44,14 +44,14 @@ class StatCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.titleMedium?.copyWith(
-                      color: scheme.onSecondary,
+                      color: scheme.onSecondaryContainer,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     value,
-                    style: textTheme.headlineSmall?.copyWith(color: scheme.onSecondary),
+                    style: textTheme.headlineSmall?.copyWith(color: scheme.onSecondaryContainer),
                   ),
                 ],
               ),

@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/domain/user_role.dart';
 import '../../features/auth/presentation/session_controller.dart';
 import '../l10n/l10n.dart';
+import '../network/offline_cache.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
 import 'app_drawer.dart';
 import 'grids_bottom_nav.dart';
 import 'nav_destinations.dart';
@@ -20,10 +23,17 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final role = ref.watch(currentSessionProvider)?.role ?? UserRole.owner;
+    final online = ref.watch(onlineStatusProvider);
     return Scaffold(
       key: ref.watch(shellScaffoldKeyProvider),
       drawer: const AppDrawer(),
-      body: navigationShell,
+      body: Column(
+        children: [
+          Expanded(child: navigationShell),
+          // Above the bottom nav, so it doesn't push the pages' app bars around.
+          if (!online) const OfflineBanner(),
+        ],
+      ),
       bottomNavigationBar: GridsBottomNav(
         destinations: navDestinations(context.l10n, role),
         selectedIndex: navigationShell.currentIndex,
@@ -31,6 +41,33 @@ class AppShell extends ConsumerWidget {
         onSelected: (index) => navigationShell.goBranch(
           index,
           initialLocation: index == navigationShell.currentIndex,
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown while the server can't be reached; screens show their last saved data.
+class OfflineBanner extends StatelessWidget {
+  const OfflineBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      liveRegion: true,
+      child: Material(
+        color: GridsColors.of(context).slate,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+          child: Row(
+            children: [
+              const Icon(Icons.cloud_off_rounded, color: Colors.white, size: 18),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(context.l10n.offlineBanner, style: const TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
         ),
       ),
     );

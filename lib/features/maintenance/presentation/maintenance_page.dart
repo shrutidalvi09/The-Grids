@@ -146,15 +146,33 @@ class _AdminView extends ConsumerWidget {
             value: summary,
             emptyText: '',
             onRetry: () => ref.invalidate(maintenanceSummaryProvider),
-            builder: (s) => ListTile(
+            builder: (s) => InkWell(
               onTap: () => context.go(AppRoutes.defaulters),
-              title: Text(l10n.maintenanceDueFlats(s.pendingFlats), style: theme.textTheme.titleLarge),
-              subtitle: Text(
-                '${l10n.pendingAmount(formatPaise(s.pendingAmountPaise))}\n'
-                '${l10n.collectedThisMonth(formatPaise(s.collectedThisMonthPaise))}',
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.sm, AppSpacing.lg),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.maintenanceDueFlats(s.pendingFlats), style: theme.textTheme.titleMedium),
+                          const SizedBox(height: AppSpacing.xs),
+                          Text(
+                            l10n.pendingAmount(formatPaise(s.pendingAmountPaise)),
+                            style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.secondary),
+                          ),
+                          Text(
+                            l10n.collectedThisMonth(formatPaise(s.collectedThisMonthPaise)),
+                            style: TextStyle(color: GridsColors.of(context).slate),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: GridsColors.of(context).slate),
+                  ],
+                ),
               ),
-              isThreeLine: true,
-              trailing: const Icon(Icons.chevron_right_rounded),
             ),
           ),
           ...config.when(
@@ -182,7 +200,13 @@ class _AdminView extends ConsumerWidget {
                 for (final bill in list.take(4))
                   ListTile(
                     title: Text(bill.vendor),
-                    subtitle: Text(l10n.dueOn(formatDayMonth(context, bill.dueDate))),
+                    subtitle: Text(
+                      l10n.dueOn(formatDayMonth(context, bill.dueDate)),
+                      // Overdue bills stand out, as on the full bills page.
+                      style: bill.dueDate.isBefore(DateUtils.dateOnly(DateTime.now()))
+                          ? TextStyle(color: GridsColors.of(context).danger)
+                          : null,
+                    ),
                     trailing: Text(formatPaise(bill.amountPaise), style: theme.textTheme.titleMedium),
                   ),
               ],

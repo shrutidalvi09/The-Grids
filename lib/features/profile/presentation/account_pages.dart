@@ -67,7 +67,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
           ListTileCard(
             leading: const Icon(Icons.edit_rounded),
             title: l10n.editProfile,
-            onTap: () => context.go(AppRoutes.editProfile),
+            onTap: () => context.push(AppRoutes.editProfile),
           ),
           const SizedBox(height: AppSpacing.sm),
           ListTileCard(

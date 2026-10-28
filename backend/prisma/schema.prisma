@@ -1,0 +1,613 @@
+// The Grids – MySQL schema.
+// Conventions: ids are cuid strings; money is integer paise (₹1 = 100 paise);
+// every society-owned row carries societyId so queries are always scoped.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ───────────────────────────── Society structure ─────────────────────────────
+
+model Society {
+  id                String   @id @default(cuid())
+  name              String
+  address           String?
+  city              String?
+  logoUrl           String?
+  maintenanceDueDay Int      @default(10)
+  /// For the Home weather card.
+  latitude          Float?
+  longitude         Float?
+  /// IANA zone; facility hours ("06:00"–"22:00") are in this zone.
+  timezone          String   @default("Asia/Kolkata")
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  towers           Tower[]
+  flats            Flat[]
+  memberships      Membership[]
+  visitors         Visitor[]
+  facilities       Facility[]
+  notices          Notice[]
+  complaints       Complaint[]
+  maintenanceItems MaintenanceItem[]
+  dues             Due[]
+  payments         Payment[]
+  tenancies        Tenancy[]
+  societyBills     SocietyBill[]
+  polls            Poll[]
+  communities      Community[]
+  serviceProviders ServiceProvider[]
+  events           Event[]
+  notifications    Notification[]
+
+  @@index([name])
+}
+
+model Tower {
+  id        String @id @default(cuid())
+  societyId String
+  name      String
+  floors    Int
+
+  society    Society    @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  flats      Flat[]
+  notices    Notice[]
+  facilities Facility[]
+
+  @@unique([societyId, name])
+}
+
+model Flat {
+  id        String @id @default(cuid())
+  societyId String
+  towerId   String
+  number    String
+  floor     Int
+
+  society     Society           @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  tower       Tower             @relation(fields: [towerId], references: [id], onDelete: Cascade)
+  memberships Membership[]
+  household   HouseholdMember[]
+  visitors    Visitor[]
+  complaints  Complaint[]
+  dues        Due[]
+  tenancies   Tenancy[]
+
+  @@unique([towerId, number])
+  @@index([societyId])
+}
+
+// ───────────────────────────── People and access ─────────────────────────────
+
+enum Role {
+  ADMIN
+  OWNER
+  TENANT
+}
+
+enum MembershipStatus {
+  INVITED // added by an admin/owner, has not signed in yet
+  ACTIVE
+  REMOVED
+}
+
+/// A person. Identity is the verified mobile number; no passwords, no Aadhaar.
+model User {
+  id                String   @id @default(cuid())
+  phone             String   @unique // E.164, e.g. +919876543210
+  name              String
+  email             String?
+  photoUrl          String?
+  language          String   @default("en")
+  theme             String   @default("system")
+  notificationPrefs Json?
+  /// upi | card | netbanking; pre-selected in Razorpay Checkout. Card and UPI
+  /// details themselves are only ever stored by Razorpay.
+  paymentMethod     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  memberships        Membership[]       @relation("MembershipUser")
+  invitedMemberships Membership[]       @relation("MembershipInvitedBy")
+  refreshTokens      RefreshToken[]
+  noticesCreated     Notice[]
+  complaintsRaised   Complaint[]
+  payments           Payment[]
+  tenanciesOwned     Tenancy[]          @relation("TenancyOwner")
+  tenanciesRented    Tenancy[]          @relation("TenancyTenant")
+  pollsCreated       Poll[]
+  pollVotes          PollVote[]
+  communitiesCreated Community[]
+  communityMembers   CommunityMember[]
+  announcements      Announcement[]
+  facilityBookings   FacilityBooking[]
+  notifications      Notification[]
+  deviceTokens       DeviceToken[]
+}
+
+/// A user's role in a society. One user can hold several (e.g. admin + owner)
+/// or belong to several societies; the drawer's switcher picks one.
+model Membership {
+  id          String           @id @default(cuid())
+  userId      String
+  societyId   String
+  role        Role
+  flatId      String? // required for OWNER and TENANT
+  status      MembershipStatus @default(INVITED)
+  invitedById String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user          User           @relation("MembershipUser", fields: [userId], references: [id], onDelete: Cascade)
+  society       Society        @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  flat          Flat?          @relation(fields: [flatId], references: [id], onDelete: SetNull)
+  invitedBy     User?          @relation("MembershipInvitedBy", fields: [invitedById], references: [id], onDelete: SetNull)
+  otpChallenges OtpChallenge[]
+  refreshTokens RefreshToken[]
+
+  @@unique([userId, societyId, role])
+  @@index([societyId, role])
+}
+
+/// One OTP sent to a phone for a specific membership. Only a hash is stored.
+model OtpChallenge {
+  id           String    @id @default(cuid())
+  membershipId String
+  phone        String
+  codeHash     String
+  expiresAt    DateTime
+  attempts     Int       @default(0)
+  consumedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  membership Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@index([phone, createdAt])
+}
+
+/// Opaque, rotating refresh tokens (only the SHA-256 hash is stored).
+/// Tokens rotated from the same login share a familyId; reusing a rotated
+/// token revokes the whole family.
+model RefreshToken {
+  id           String    @id @default(cuid())
+  userId       String
+  membershipId String
+  familyId     String
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  membership Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@index([familyId])
+  @@index([userId])
+}
+
+model HouseholdMember {
+  id        String   @id @default(cuid())
+  flatId    String
+  name      String
+  relation  String
+  phone     String?
+  photoUrl  String?
+  createdAt DateTime @default(now())
+
+  flat Flat @relation(fields: [flatId], references: [id], onDelete: Cascade)
+}
+
+model DeviceToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique @db.VarChar(512)
+  platform  String // android | ios
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ───────────────────────────── Tower life ─────────────────────────────
+
+enum VisitorType {
+  GUEST
+  DELIVERY
+  SERVICE
+}
+
+enum VisitorStatus {
+  EXPECTED
+  CHECKED_IN
+  CHECKED_OUT
+  HELD_AT_GATE // e.g. parcel waiting at security
+}
+
+model Visitor {
+  id        String        @id @default(cuid())
+  societyId String
+  flatId    String
+  name      String
+  purpose   String?
+  type      VisitorType
+  status    VisitorStatus @default(EXPECTED)
+  inTime    DateTime?
+  outTime   DateTime?
+  createdAt DateTime      @default(now())
+
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  flat    Flat    @relation(fields: [flatId], references: [id], onDelete: Cascade)
+
+  @@index([societyId, flatId, createdAt])
+}
+
+model Facility {
+  id              String  @id @default(cuid())
+  societyId       String
+  towerId         String?
+  name            String
+  description     String? @db.Text
+  photoUrl        String?
+  openTime        String // "06:00" (society local time)
+  closeTime       String // "22:00"
+  maxDurationMins Int
+  capacity        Int?
+  isActive        Boolean @default(true)
+
+  society  Society           @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  tower    Tower?            @relation(fields: [towerId], references: [id], onDelete: SetNull)
+  bookings FacilityBooking[]
+
+  @@index([societyId])
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model FacilityBooking {
+  id         String        @id @default(cuid())
+  facilityId String
+  userId     String
+  startsAt   DateTime
+  endsAt     DateTime
+  status     BookingStatus @default(CONFIRMED)
+  createdAt  DateTime      @default(now())
+
+  facility Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([facilityId, startsAt])
+}
+
+model Notice {
+  id          String    @id @default(cuid())
+  societyId   String
+  towerId     String? // null = whole society
+  title       String
+  body        String    @db.Text
+  category    String?
+  isAlert     Boolean   @default(false) // shown as the Home banner
+  scheduledAt DateTime? // when the work happens, e.g. lift maintenance
+  expiresAt   DateTime?
+  createdById String
+  createdAt   DateTime  @default(now())
+
+  society   Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  tower     Tower?  @relation(fields: [towerId], references: [id], onDelete: SetNull)
+  createdBy User    @relation(fields: [createdById], references: [id])
+
+  @@index([societyId, createdAt])
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+model Complaint {
+  id          String          @id @default(cuid())
+  societyId   String
+  flatId      String?
+  raisedById  String
+  title       String
+  category    String?
+  description String          @db.Text
+  photoUrl    String?
+  status      ComplaintStatus @default(OPEN)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  resolvedAt  DateTime?
+
+  society  Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  flat     Flat?   @relation(fields: [flatId], references: [id], onDelete: SetNull)
+  raisedBy User    @relation(fields: [raisedById], references: [id])
+
+  @@index([societyId, status])
+}
+
+// ───────────────────────────── Money ─────────────────────────────
+
+/// One line of the monthly maintenance charge (Cleaning, Gardening, …).
+model MaintenanceItem {
+  id          String @id @default(cuid())
+  societyId   String
+  label       String
+  amountPaise Int
+  sortOrder   Int    @default(0)
+
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+
+  @@index([societyId])
+}
+
+enum DueType {
+  MAINTENANCE
+  RENT
+}
+
+enum DueStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+/// Something a flat owes for a period. `breakdown` is a frozen copy of the
+/// line items at billing time: [{ "label": "Cleaning", "amountPaise": 50000 }].
+model Due {
+  id          String    @id @default(cuid())
+  societyId   String
+  flatId      String
+  type        DueType
+  period      String // "2026-10"
+  amountPaise Int
+  breakdown   Json
+  dueDate     DateTime
+  status      DueStatus @default(PENDING)
+  paidAt      DateTime?
+  /// Last "please pay" reminder from the admin (one per day at most).
+  lastRemindedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  society  Society   @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  flat     Flat      @relation(fields: [flatId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@unique([flatId, type, period])
+  @@index([societyId, status])
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  societyId         String
+  dueId             String
+  payerId           String
+  amountPaise       Int
+  method            String? // upi | card | netbanking | wallet
+  status            PaymentStatus @default(CREATED)
+  gateway           String        @default("razorpay") // razorpay | simulated (dev only)
+  failureReason     String?
+  razorpayOrderId   String?       @unique
+  razorpayPaymentId String?       @unique
+  receiptNo         String?       @unique
+  receiptUrl        String?
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @default(now()) @updatedAt
+
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  due     Due     @relation(fields: [dueId], references: [id], onDelete: Cascade)
+  payer   User    @relation(fields: [payerId], references: [id])
+
+  @@index([societyId, createdAt])
+}
+
+/// Gap-free receipt numbers per society and month: key "MNT-2026-10" → 7
+/// gives "MNT/2026/10/0007". Incremented inside the payment transaction.
+model ReceiptCounter {
+  societyId String
+  key       String
+  value     Int    @default(0)
+
+  @@id([societyId, key])
+}
+
+/// Lease between an owner and a tenant. `rentBreakdown` holds rent items only
+/// (not maintenance services): [{ "label": "Rent", "amountPaise": 1500000 }].
+model Tenancy {
+  id               String    @id @default(cuid())
+  societyId        String
+  flatId           String
+  ownerId          String
+  tenantId         String
+  monthlyRentPaise Int
+  depositPaise     Int
+  rentDueDay       Int       @default(5)
+  rentBreakdown    Json
+  startDate        DateTime
+  endDate          DateTime?
+  createdAt        DateTime  @default(now())
+
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  flat    Flat    @relation(fields: [flatId], references: [id], onDelete: Cascade)
+  owner   User    @relation("TenancyOwner", fields: [ownerId], references: [id])
+  tenant  User    @relation("TenancyTenant", fields: [tenantId], references: [id])
+
+  @@index([flatId])
+}
+
+enum BillStatus {
+  PAID
+  DUE
+}
+
+/// What the society itself owes vendors (electrician, security agency, …).
+model SocietyBill {
+  id          String     @id @default(cuid())
+  societyId   String
+  vendor      String
+  category    String?
+  amountPaise Int
+  dueDate     DateTime
+  status      BillStatus @default(DUE)
+  paidAt      DateTime?
+
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+
+  @@index([societyId, status])
+}
+
+// ───────────────────────────── Community ─────────────────────────────
+
+model Poll {
+  id          String    @id @default(cuid())
+  societyId   String
+  question    String
+  closesAt    DateTime?
+  createdById String
+  createdAt   DateTime  @default(now())
+
+  society   Society      @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  createdBy User         @relation(fields: [createdById], references: [id])
+  options   PollOption[]
+  votes     PollVote[]
+
+  @@index([societyId, createdAt])
+}
+
+model PollOption {
+  id        String @id @default(cuid())
+  pollId    String
+  label     String
+  sortOrder Int    @default(0)
+
+  poll  Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes PollVote[]
+}
+
+/// One vote per user per poll, enforced by the unique index.
+model PollVote {
+  id        String   @id @default(cuid())
+  pollId    String
+  optionId  String
+  userId    String
+  createdAt DateTime @default(now())
+
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId])
+}
+
+model Community {
+  id          String   @id @default(cuid())
+  societyId   String
+  name        String
+  description String?  @db.Text
+  photoUrl    String?
+  createdById String
+  createdAt   DateTime @default(now())
+
+  society       Society           @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  createdBy     User              @relation(fields: [createdById], references: [id])
+  members       CommunityMember[]
+  announcements Announcement[]
+
+  @@unique([societyId, name])
+}
+
+model CommunityMember {
+  communityId String
+  userId      String
+  joinedAt    DateTime @default(now())
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([communityId, userId])
+}
+
+model Announcement {
+  id          String    @id @default(cuid())
+  communityId String
+  authorId    String
+  title       String
+  body        String    @db.Text
+  eventAt     DateTime?
+  endsAt      DateTime?
+  venue       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  author    User      @relation(fields: [authorId], references: [id])
+
+  @@index([communityId, createdAt])
+}
+
+model ServiceProvider {
+  id        String   @id @default(cuid())
+  societyId String
+  category  String // Maid, Cook, Driver, Laundry, Doctor, Plumber, …
+  name      String
+  phone     String
+  location  String?
+  rating    Float?
+  createdAt DateTime @default(now())
+
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+
+  @@index([societyId, category])
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  societyId   String
+  title       String
+  description String?   @db.Text
+  location    String
+  imageUrl    String?
+  startsAt    DateTime
+  endsAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+
+  @@index([societyId, startsAt])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  societyId String
+  type      String // due | notice | poll | visitor | …
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+}

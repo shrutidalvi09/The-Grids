@@ -1,0 +1,7 @@
+{
+  "dart.flutterSdkPath": "C:\\flutter",
+  "search.exclude": {
+    "backend/src/generated/**": true,
+    "lib/l10n/app_localizations*.dart": true
+  }
+}

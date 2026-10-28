@@ -1,0 +1,796 @@
+{
+  "@@locale": "en",
+  "appTitle": "The Grids",
+  "@appTitle": {
+    "description": "Brand name. Do not translate."
+  },
+  "appTagline": "Smart Living. Smart Spaces.",
+  "@appTagline": {
+    "description": "Brand tagline. Kept in English in every language."
+  },
+  "navHome": "Home",
+  "navTower": "Tower",
+  "navMaintenance": "Maintenance",
+  "@navMaintenance": {
+    "description": "Bottom tab and page title for owners and admins."
+  },
+  "navRent": "Rent",
+  "@navRent": {
+    "description": "Replaces the Maintenance tab for tenants."
+  },
+  "navCommunity": "Community",
+  "navProfile": "Profile",
+  "notificationsTitle": "Notifications",
+  "openMenuTooltip": "Open menu",
+  "unreadNotifications": "{count, plural, =0{No unread notifications} =1{1 unread notification} other{{count} unread notifications}}",
+  "@unreadNotifications": {
+    "description": "Screen-reader label for the notification bell.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "emptyNotifications": "You're all caught up.",
+  "drawerSwitchSociety": "Switch society",
+  "drawerEvents": "Events",
+  "drawerFacilityBookings": "Facility Bookings",
+  "drawerHelp": "Help",
+  "drawerAbout": "About",
+  "drawerLogout": "Logout",
+  "roleAdmin": "Admin",
+  "roleOwner": "Owner",
+  "roleTenant": "Tenant",
+  "roleLabel": "Role: {role}",
+  "@roleLabel": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "comingSoonTitle": "Coming soon",
+  "comingSoonBody": "This screen is being built and will be available shortly.",
+  "profileTheme": "Theme",
+  "themeSystem": "System default",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "profileLanguage": "Language",
+  "retry": "Retry",
+  "errorGeneric": "Something went wrong. Please try again.",
+  "pageNotFoundTitle": "Page not found",
+  "goHome": "Go to Home",
+  "validationRequired": "This field is required",
+  "validationPhone": "Enter a valid 10-digit mobile number",
+  "validationAmount": "Enter a valid amount",
+  "selectSocietyTitle": "Select your society",
+  "searchSocietyHint": "Search society name",
+  "noSocietiesFound": "No society found",
+  "newToGrids": "New to The Grids? Ask your society admin to add your mobile number.",
+  "welcomeUser": "Welcome to The Grids!",
+  "roleLoginAdmin": "Admin Login",
+  "roleLoginOwner": "Member (Owner) Login",
+  "roleLoginTenant": "Tenant Login",
+  "phonePrompt": "Enter your mobile number. We'll send you a verification code.",
+  "mobileNumberLabel": "Mobile number",
+  "sendCode": "Send Code",
+  "otpPrompt": "Enter the 6-digit code sent to {phone}",
+  "@otpPrompt": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "verificationCodeLabel": "Verification code",
+  "didNotReceiveCode": "Didn't receive the code?",
+  "resendIn": "Resend in {seconds}s",
+  "@resendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "resendCode": "Resend code",
+  "login": "Login",
+  "changeNumber": "Change number",
+  "devOtpBanner": "Dev build: your code is {code}",
+  "@devOtpBanner": {
+    "description": "Only shown in development builds.",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "useCode": "Use code",
+  "errorNotRegistered": "Not registered – contact your society admin",
+  "errorOtpInvalid": "{count, plural, =1{Incorrect code. 1 attempt left.} other{Incorrect code. {count} attempts left.}}",
+  "@errorOtpInvalid": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorOtpExpired": "This code has expired. Request a new one.",
+  "errorOtpCooldown": "Please wait {seconds}s before requesting a new code.",
+  "@errorOtpCooldown": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorOtpLimit": "Too many codes requested. Try again in an hour.",
+  "errorNetwork": "Can't reach the server. Check your internet connection.",
+  "sessionExpired": "Your session has expired. Please sign in again.",
+  "switchRoleTitle": "Switch society or role",
+  "currentLabel": "Current",
+  "addFacility": "Add Facility",
+  "addNotice": "Add Notice",
+  "addPhoto": "Add photo",
+  "alertLabel": "Alert",
+  "book": "Book",
+  "bookAFacility": "Book a facility",
+  "bookingCancelled": "Booking cancelled",
+  "bookingConfirmed": "{facility} booked for {when}",
+  "@bookingConfirmed": {
+    "placeholders": {
+      "facility": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "bookSlot": "Book {time}",
+  "@bookSlot": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "cancelBooking": "Cancel booking",
+  "cancelBookingConfirm": "Cancel {facility} on {when}?",
+  "@cancelBookingConfirm": {
+    "placeholders": {
+      "facility": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "capacityFieldLabel": "Capacity (optional)",
+  "capacityHint": "Most bookings allowed at the same time. Leave empty for no limit.",
+  "capacityUpTo": "{count, plural, =1{1 booking at a time} other{Up to {count} at a time}}",
+  "@capacityUpTo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoryCleaning": "Cleaning",
+  "categoryElectrical": "Electrical",
+  "categoryEvent": "Event",
+  "categoryFacilities": "Facilities",
+  "categoryGeneral": "General",
+  "categoryLift": "Lift",
+  "categoryMaintenance": "Maintenance",
+  "categoryMeeting": "Meeting",
+  "categoryOther": "Other",
+  "categoryParking": "Parking",
+  "categoryPlumbing": "Plumbing",
+  "categorySafety": "Safety",
+  "categorySecurity": "Security",
+  "categoryUtilities": "Utilities",
+  "categoryWater": "Water",
+  "changePhoto": "Change photo",
+  "changeStatus": "Update status",
+  "checklistBillDue": "{bill} of {amount} is due on {date}",
+  "@checklistBillDue": {
+    "placeholders": {
+      "bill": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "checklistBillOverdue": "{bill} of {amount} was due on {date}",
+  "@checklistBillOverdue": {
+    "placeholders": {
+      "bill": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "checklistBillsClear": "No bills due — you're all paid up",
+  "checklistHelpExpected": "{name} hasn't checked in yet",
+  "@checklistHelpExpected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "checklistHelpIn": "{name} checked in at {time}",
+  "@checklistHelpIn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "checklistParcel": "Parcel from {from} is waiting at security",
+  "@checklistParcel": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseDay": "Choose a day",
+  "chooseSlot": "Choose a time",
+  "closeTimeLabel": "Closes at",
+  "complaintPosted": "Complaint posted",
+  "complaintStatusChanged": "Status changed to {status}",
+  "@complaintStatusChanged": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "complaintStatusInProgress": "In progress",
+  "complaintStatusOpen": "Open",
+  "complaintStatusResolved": "Resolved",
+  "complaintsTitle": "Complaints",
+  "dailyChecklistTitle": "Your Daily Checklist",
+  "delete": "Delete",
+  "deleteNoticeConfirm": "Delete this notice?",
+  "edit": "Edit",
+  "editFacility": "Edit Facility",
+  "editNotice": "Edit Notice",
+  "errorAlreadyBooked": "You already have this slot.",
+  "errorForbidden": "You don't have permission to do that.",
+  "errorSlotFull": "That slot was just taken. Please pick another.",
+  "errorSlotInvalid": "This slot can't be booked.",
+  "errorUnsupportedFile": "Please choose a JPEG, PNG or WebP photo under 5 MB.",
+  "facilitiesTitle": "Facilities",
+  "facilityAvailable": "Available now",
+  "facilityBookedToday": "{facility} – booked today, {time}",
+  "@facilityBookedToday": {
+    "placeholders": {
+      "facility": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "facilityBookingSummaryTitle": "Facility Booking Summary",
+  "facilityClosedOpens": "Closed · opens {time}",
+  "@facilityClosedOpens": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "facilityFull": "Fully booked right now",
+  "facilityHoursTooShort": "Opening hours must fit at least one booking.",
+  "facilityNameLabel": "Facility name",
+  "facilityNextFree": "next free at {time}",
+  "@facilityNextFree": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "facilityOpenTill": "open till {time}",
+  "@facilityOpenTill": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "facilityPlacesLeft": "{count, plural, =0{no places left} =1{1 place left} other{{count} places left}}",
+  "@facilityPlacesLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "facilitySaved": "Facility saved",
+  "facilityStatusClosed": "Closed",
+  "facilityStatusFull": "Full",
+  "facilityStatusOpen": "Open",
+  "fieldCategory": "Category",
+  "fieldDescription": "Description",
+  "fieldTitle": "Title",
+  "filterAll": "All",
+  "flatNumber": "Flat {number}",
+  "@flatNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingAfternoon": "Good afternoon, {name}!",
+  "@greetingAfternoon": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingEvening": "Good evening, {name}!",
+  "@greetingEvening": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingMorning": "Good morning, {name}!",
+  "@greetingMorning": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "keepBooking": "Keep it",
+  "minutes": "{count} min",
+  "@minutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "myComplaintsTitle": "My Complaints",
+  "neighboursTitle": "Neighbours Directory",
+  "noBookings": "No upcoming bookings",
+  "noComplaints": "No complaints — everything's working!",
+  "noFacilities": "No facilities yet",
+  "noNeighbours": "No neighbours found",
+  "noNotices": "No notices yet",
+  "noSlots": "No slots on this day",
+  "noticeAlertHint": "Shown at the top of everyone's Home screen for a day.",
+  "noticeAlertLabel": "Show as an alert on Home",
+  "noticeDeleted": "Notice deleted",
+  "noticeSaved": "Notice saved",
+  "noticeScheduleLabel": "Date and time (optional)",
+  "noticesTitle": "Tower Notices",
+  "noUpcomingEvents": "No upcoming events",
+  "noVisitors": "No visitors in the last 7 days",
+  "openTimeLabel": "Opens at",
+  "photoFromCamera": "Take a photo",
+  "photoFromGallery": "Choose from gallery",
+  "postComplaint": "Post Complaint",
+  "postedOn": "Posted {date}",
+  "@postedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "raisedByOn": "Raised by {name} on {date}",
+  "@raisedByOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "removePhoto": "Remove photo",
+  "save": "Save",
+  "searchNeighboursHint": "Search by name or flat",
+  "slotLength": "{minutes}-minute slots",
+  "@slotLength": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "slotLengthLabel": "Booking length",
+  "slotYours": "yours",
+  "statDues": "Dues",
+  "statFlats": "Apartments",
+  "statOwners": "Owners",
+  "statsTitle": "Statistics",
+  "statTenants": "Tenants",
+  "statTowers": "Towers",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "upcomingEventsTitle": "Upcoming Events",
+  "uploadingPhoto": "Uploading photo…",
+  "validationTooShort": "Please add a little more detail",
+  "viewAll": "View all",
+  "visitorAtGate": "At gate",
+  "visitorCheckedIn": "Checked in",
+  "visitorCheckedOut": "Left",
+  "visitorExpected": "Expected",
+  "visitorsTitle": "Visitors & Service Log",
+  "weatherClear": "clear sky",
+  "weatherCloudy": "cloudy",
+  "weatherFog": "foggy",
+  "weatherNow": "Weather: {temp}°C, {condition}",
+  "@weatherNow": {
+    "placeholders": {
+      "temp": {
+        "type": "int"
+      },
+      "condition": {
+        "type": "String"
+      }
+    }
+  },
+  "weatherRain": "rain",
+  "weatherSnow": "snow",
+  "weatherStorm": "thunderstorm",
+  "addBill": "Add Bill",
+  "addItem": "Add item",
+  "allPaidUp": "You're all paid up",
+  "allPaidUpBody": "No dues right now. Thank you!",
+  "amountLabel": "Amount",
+  "billAdded": "Bill added",
+  "billMarkedPaid": "Bill marked as paid",
+  "billsDue": "Due",
+  "billsPaid": "Paid",
+  "checkStatus": "Check status",
+  "collectedThisMonth": "Collected this month: {amount}",
+  "@collectedThisMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmingPayment": "Confirming your payment…",
+  "defaultersTitle": "Pending Dues",
+  "downloadPdf": "Download PDF",
+  "dueDateLabel": "Due date",
+  "dueDayLabel": "Due every month on",
+  "dueDayOfMonth": "Day {day}",
+  "@dueDayOfMonth": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "dueOn": "Due on {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "duesCount": "{count, plural, =1{1 month due} other{{count} months due}}",
+  "@duesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorAlreadyReminded": "A reminder was already sent in the last 24 hours.",
+  "errorDueAlreadyPaid": "This due has already been paid.",
+  "errorPaymentVerification": "We couldn't verify this payment. If money was deducted, it will be confirmed or refunded shortly.",
+  "flatLabelField": "Flat",
+  "itemAmount": "Amount",
+  "itemLabel": "Item",
+  "maintenanceAppliesNextMonth": "Changes apply from the next bill. Bills already issued stay the same.",
+  "maintenanceDueFlats": "{count, plural, =0{No flats with pending dues} =1{1 flat has pending dues} other{{count} flats have pending dues}}",
+  "@maintenanceDueFlats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "maintenanceDueTitle": "Maintenance Due",
+  "maintenanceItemsHint": "Monthly charges every flat pays. Residents see this breakdown on their bill.",
+  "maintenanceSaved": "Maintenance updated",
+  "markPaid": "Mark as paid",
+  "markPaidConfirm": "Mark {vendor} bill of {amount} as paid?",
+  "@markPaidConfirm": {
+    "placeholders": {
+      "vendor": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "memberNameLabel": "Paid by",
+  "methodCard": "Debit / Credit card",
+  "methodCardShort": "Card",
+  "methodNetbanking": "Net banking",
+  "methodNetbankingShort": "Bank",
+  "methodUpi": "UPI",
+  "methodWallet": "Wallet",
+  "noBills": "No bills here",
+  "noDefaulters": "Every flat is paid up",
+  "noPayments": "No payments yet",
+  "noPdfViewer": "Receipt saved. Install a PDF viewer to open it.",
+  "overdueDays": "{days, plural, =1{1 day overdue} other{{days} days overdue}}",
+  "@overdueDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueSince": "Overdue since {date}",
+  "@overdueSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "paidOn": "Paid on {date}",
+  "@paidOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "paidOnLabel": "Paid on",
+  "payAmount": "Pay {amount}",
+  "@payAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentCancelled": "Payment cancelled",
+  "paymentFailedBody": "The payment didn't go through. If money was deducted, it will be refunded automatically.",
+  "paymentFailedTitle": "Payment failed",
+  "paymentHistory": "Payment History",
+  "paymentModeLabel": "Payment mode",
+  "paymentPendingBody": "We're waiting for your bank to confirm. This usually takes a minute.",
+  "paymentPendingTitle": "Payment pending",
+  "paymentSuccessful": "Payment Successful",
+  "payNow": "Pay Now",
+  "pendingAmount": "Pending: {amount}",
+  "@pendingAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "receiptNoLabel": "Receipt No.",
+  "receiptShareText": "Receipt {receipt} from {society}",
+  "@receiptShareText": {
+    "placeholders": {
+      "receipt": {
+        "type": "String"
+      },
+      "society": {
+        "type": "String"
+      }
+    }
+  },
+  "receiptTitle": "Receipt",
+  "remind": "Remind",
+  "remindedToday": "Reminded",
+  "reminderSent": "Reminder sent to {flat}",
+  "@reminderSent": {
+    "placeholders": {
+      "flat": {
+        "type": "String"
+      }
+    }
+  },
+  "removeItem": "Remove item",
+  "rentDueTitle": "Rent Due",
+  "securePaymentNote": "Payments are processed securely by Razorpay. Card details are never stored in The Grids.",
+  "share": "Share",
+  "simulatedCheckoutBody": "Razorpay keys are not set on the server, so this test checkout stands in for it. No real money moves.",
+  "simulatedCheckoutTitle": "Test checkout",
+  "simulateFailure": "Simulate failure",
+  "simulateSuccess": "Simulate success",
+  "societyBillsTitle": "Society Bills",
+  "societyLabel": "Society",
+  "totalLabel": "Total",
+  "towardsLabel": "Towards",
+  "transactionIdLabel": "Transaction ID",
+  "tryAgain": "Try again",
+  "updateMaintenance": "Update Maintenance",
+  "vendorLabel": "Vendor",
+  "viewBreakdown": "View Breakdown",
+  "addAnnouncement": "Add Announcement",
+  "addMembers": "Add members",
+  "addOption": "Add option",
+  "announcementDeleted": "Announcement deleted",
+  "announcementSaved": "Announcement saved",
+  "announcementsTitle": "Announcements",
+  "clearDate": "Clear date",
+  "closePoll": "Close poll",
+  "closePollConfirm": "Close this poll? No more votes will be accepted.",
+  "communitiesTitle": "Communities",
+  "communityActions": "Community options",
+  "communityCreated": "Community created",
+  "communityDeleted": "Community deleted",
+  "communityNameLabel": "Name",
+  "communitySaved": "Community saved",
+  "create": "Create",
+  "createPoll": "Create Poll",
+  "deleteAnnouncementConfirm": "Delete this announcement?",
+  "deleteCommunity": "Delete community",
+  "deleteCommunityConfirm": "Delete {club} and all its announcements?",
+  "@deleteCommunityConfirm": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "deletePoll": "Delete poll",
+  "deletePollConfirm": "Delete this poll and all its votes?",
+  "editAnnouncement": "Edit Announcement",
+  "editCommunity": "Edit Community",
+  "endBeforeStart": "The end time must be after the start time.",
+  "endTimeLabel": "Ends at",
+  "errorAlreadyVoted": "You have already voted in this poll.",
+  "errorCommunityExists": "A community with this name already exists.",
+  "errorPollClosed": "This poll has closed.",
+  "eventDateLabel": "Event date",
+  "join": "Join",
+  "joined": "Joined",
+  "joinedClub": "You joined {club}",
+  "@joinedClub": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "leave": "Leave",
+  "leaveConfirm": "Leave {club}?",
+  "@leaveConfirm": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "leftClub": "You left {club}",
+  "@leftClub": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "membersCount": "{count, plural, =0{No members yet} =1{1 member} other{{count} members}}",
+  "@membersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "membersSelected": "{count} selected",
+  "@membersSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "membersTitle": "Members",
+  "newCommunity": "New Community",
+  "newPoll": "New Poll",
+  "noAnnouncements": "No announcements yet",
+  "noCommunities": "No communities yet",
+  "noPolls": "No polls yet",
+  "optionalLabel": "Optional",
+  "pollActions": "Poll options",
+  "pollClosed": "Closed",
+  "pollClosedDone": "Poll closed",
+  "pollClosesLabel": "Voting closes on",
+  "pollClosesOn": "Closes {date}",
+  "@pollClosesOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pollCreated": "Poll created. Residents have been notified.",
+  "pollDeleted": "Poll deleted",
+  "pollNoEnd": "Stays open until you close it",
+  "pollNotifyNote": "Everyone in the society will be notified. Each person can vote once.",
+  "pollOptionLabel": "Option {number}",
+  "@pollOptionLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "pollQuestionLabel": "Question",
+  "pollsTitle": "Polls",
+  "postedByOn": "Posted by {name} on {date}",
+  "@postedByOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "removeOption": "Remove option",
+  "resultsAfterVoting": "Results appear after you vote.",
+  "searchMembersHint": "Search by name or flat",
+  "startTimeLabel": "Starts at",
+  "startTimeRequired": "Pick a start time for the event.",
+  "totalVotes": "Total votes: {count}",
+  "@totalVotes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "validationDuplicateOption": "This option is already listed.",
+  "venueLabel": "Venue",
+  "vote": "Vote",
+  "voteCount": "{count, plural, =1{1 vote} other{{count} votes}} ({percent}%)",
+  "@voteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "voteRecorded": "Thanks for voting!",
+  "yourVote": "your vote",
+  "youVotedForLabel": "You voted for: "
+}

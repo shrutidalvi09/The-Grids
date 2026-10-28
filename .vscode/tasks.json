@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "MySQL: start",
+      "type": "shell",
+      "command": "${env:USERPROFILE}\\mysql\\start-mysql.cmd",
+      "problemMatcher": []
+    },
+    {
+      "label": "MySQL: stop",
+      "type": "shell",
+      "command": "${env:USERPROFILE}\\mysql\\stop-mysql.cmd",
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: start (watch)",
+      "type": "shell",
+      "command": "npm run start:dev",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: reset demo data",
+      "type": "shell",
+      "command": "npm run db:seed",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: test (unit + e2e)",
+      "type": "shell",
+      "command": "npm test && npm run test:e2e",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -29,7 +29,29 @@ HomeData homeFromJson(Json json) {
   final alert = json['alert'] as Json?;
   final weather = json['weather'] as Json?;
   final stats = json['stats'] as Json?;
+  final gate = json['gate'] as Json?;
   return HomeData(
+    gate: gate == null
+        ? null
+        : GateSummary(
+            awaitingApproval: gate['awaitingApproval'] as int,
+            expected: gate['expected'] as int,
+            inside: gate['inside'] as int,
+            parcels: gate['parcels'] as int,
+            staffInside: gate['staffInside'] as int,
+          ),
+    activeSos: json['activeSos'] == null
+        ? const []
+        : parseList(
+            json['activeSos'],
+            (Json a) => ActiveSos(
+              id: a['id'] as String,
+              flatLabel: a['flatLabel'] as String?,
+              raisedBy: a['raisedBy'] as String?,
+              raisedByPhone: a['raisedByPhone'] as String?,
+              createdAt: parseTime(a['createdAt']),
+            ),
+          ),
     alert: alert == null
         ? null
         : HomeAlert(id: alert['id'] as String, title: alert['title'] as String, body: alert['body'] as String),

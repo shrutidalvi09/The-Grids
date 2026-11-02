@@ -9,22 +9,32 @@ import '../../domain/tower_models.dart';
 import '../tower_labels.dart';
 
 class VisitorTile extends StatelessWidget {
-  const VisitorTile({super.key, required this.visitor, this.showFlat = false});
+  const VisitorTile({super.key, required this.visitor, this.showFlat = false, this.onTap});
 
   final Visitor visitor;
   final bool showFlat;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final v = visitor;
     final title = v.purpose == null || v.purpose == v.name ? v.name : '${v.name} (${v.purpose})';
-    final time = v.inTime == null ? null : formatTime(context, v.inTime!);
+    final time = switch (v) {
+      Visitor(:final inTime?) => formatTime(context, inTime),
+      Visitor(status: VisitorStatus.expected, :final expectedAt?) => l10n.visitorExpectedAt(
+          isSameDay(expectedAt, DateTime.now())
+              ? formatTime(context, expectedAt)
+              : '${formatDayShort(context, expectedAt)}, ${formatTime(context, expectedAt)}',
+        ),
+      _ => null,
+    };
     return ListTile(
+      onTap: onTap,
       leading: Icon(visitorIcon(v.type)),
       title: Text(title),
       // No empty second line when there's no time yet (keeps the name centred).
-      subtitle: switch ([?time, if (showFlat) ?v.flatLabel]) {
+      subtitle: switch ([?time, if (showFlat) ?v.flatLabel, ?v.vehicleNumber]) {
         [] => null,
         final parts => Text(parts.join(' · ')),
       },

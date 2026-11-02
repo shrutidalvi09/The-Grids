@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/domain/session.dart';
+import '../../features/auth/domain/user_role.dart';
 import '../../features/auth/presentation/session_controller.dart';
 import '../l10n/l10n.dart';
 import '../network/api_exception.dart';
@@ -70,11 +71,12 @@ class AppDrawer extends ConsumerWidget {
               title: Text(l10n.drawerEvents),
               onTap: () => open(AppRoutes.events),
             ),
-            ListTile(
-              leading: const Icon(Icons.sports_tennis_rounded),
-              title: Text(l10n.drawerFacilityBookings),
-              onTap: () => open(AppRoutes.facilityBookings),
-            ),
+            if (session?.role != UserRole.guard)
+              ListTile(
+                leading: const Icon(Icons.sports_tennis_rounded),
+                title: Text(l10n.drawerFacilityBookings),
+                onTap: () => open(AppRoutes.facilityBookings),
+              ),
             ListTile(
               leading: const Icon(Icons.help_outline_rounded),
               title: Text(l10n.drawerHelp),

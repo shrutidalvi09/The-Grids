@@ -40,7 +40,8 @@ void main() {
     testWidgets('owners get household, payments and Tenant Info', (tester) async {
       await open(tester, UserRole.owner, AppRoutes.profile);
       expect(find.text('Role: Owner', findRichText: true), findsOneWidget);
-      for (final item in ['Household Members', 'Services', 'Payment Settings', 'Notification Preferences']) {
+      for (final item in ['Household Members', 'Daily Help', 'My Vehicles', 'Services', 'Payment Settings', 'Notification Preferences']) {
+        await _scrollTo(tester, find.text(item));
         expect(find.text(item), findsOneWidget, reason: item);
       }
       await _scrollTo(tester, find.text('Tenant Info'));
@@ -117,7 +118,7 @@ void main() {
     await tester.enterText(find.widgetWithText(TextFormField, 'Mobile number (optional)'), '');
     await tester.tap(find.widgetWithText(FilledButton, 'Add Member'));
     await tester.pumpAndSettle();
-    expect(repo.members.last.name, 'Pragati Dalvi');
+    expect(repo.householdList.last.name, 'Pragati Dalvi');
     expect(find.text('Member added'), findsOneWidget);
   });
 

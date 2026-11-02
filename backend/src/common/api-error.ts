@@ -29,6 +29,11 @@ export type ErrorCode =
   | 'COMMUNITY_EXISTS'
   | 'LAST_ADMIN'
   | 'TENANCY_EXISTS'
+  | 'VISITOR_ARRIVED'
+  | 'LAST_ADMIN_REMOVE'
+  | 'VISITOR_DECIDED'
+  | 'PASS_NOT_FOUND'
+  | 'VEHICLE_EXISTS'
   | 'INTERNAL';
 
 export class ApiError extends HttpException {

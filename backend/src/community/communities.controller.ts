@@ -137,7 +137,7 @@ export class CommunitiesController {
   @Get('communities/candidates')
   async candidates(@Auth() auth: AuthContext): Promise<CommunityMemberView[]> {
     const memberships = await this.prisma.membership.findMany({
-      where: { societyId: auth.societyId, status: 'ACTIVE' },
+      where: { societyId: auth.societyId, status: 'ACTIVE', role: { not: 'GUARD' } },
       include: { user: { select: { name: true } }, flat: { select: flatLabelSelect } },
     });
     return sortByFlat(dedupeByUser(memberships));
@@ -293,7 +293,7 @@ export class CommunitiesController {
     const unique = [...new Set(ids)];
     if (!unique.length) return [];
     const found = await this.prisma.membership.findMany({
-      where: { societyId: auth.societyId, status: 'ACTIVE', userId: { in: unique } },
+      where: { societyId: auth.societyId, status: 'ACTIVE', role: { not: 'GUARD' }, userId: { in: unique } },
       select: { userId: true },
       distinct: ['userId'],
     });

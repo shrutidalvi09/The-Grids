@@ -24,6 +24,18 @@ final societyInfoProvider = FutureProvider.autoDispose<SocietyInfo>((ref) {
   return ref.watch(profileRepositoryProvider).society();
 });
 
+/// Admin: everyone registered in the society.
+final membersProvider = FutureProvider.autoDispose<List<Member>>((ref) {
+  ref.watch(sessionKeyProvider);
+  return ref.watch(profileRepositoryProvider).members();
+});
+
+/// Admin: flats to invite people into.
+final flatOptionsProvider = FutureProvider.autoDispose<List<FlatOption>>((ref) {
+  ref.watch(sessionKeyProvider);
+  return ref.watch(profileRepositoryProvider).flats();
+});
+
 /// Owners: their tenant. Tenants: their lease and owner. Null when there's none.
 final tenancyProvider = FutureProvider.autoDispose<Tenancy?>((ref) {
   ref.watch(sessionKeyProvider);

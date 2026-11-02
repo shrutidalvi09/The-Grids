@@ -23,10 +23,15 @@ class ProfilePage extends ConsumerWidget {
     final session = ref.watch(currentSessionProvider);
     if (session == null) return const SizedBox.shrink();
     final role = session.role;
-    final resident = role != UserRole.admin;
+    final resident = role.isResident;
 
     final items = <(IconData, String, String)>[
+      if (role == UserRole.admin) (Icons.manage_accounts_rounded, l10n.residentsTitle, AppRoutes.residents),
       if (resident) (Icons.volunteer_activism_rounded, l10n.householdTitle, AppRoutes.household),
+      if (resident) (Icons.badge_rounded, l10n.dailyHelpTitle, AppRoutes.dailyHelp),
+      if (role != UserRole.guard)
+        (Icons.directions_car_rounded, role == UserRole.admin ? l10n.vehiclesParkingTitle : l10n.vehiclesTitle, AppRoutes.vehicles),
+      if (role == UserRole.admin) (Icons.shield_rounded, l10n.dailyHelpTitle, AppRoutes.gateStaff),
       (Icons.cleaning_services_rounded, l10n.servicesTitle, AppRoutes.services),
       if (resident) (Icons.payments_rounded, l10n.paymentSettingsTitle, AppRoutes.paymentSettings),
       (Icons.language_rounded, l10n.profileLanguage, AppRoutes.languageSettings),

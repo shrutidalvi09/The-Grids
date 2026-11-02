@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../auth/domain/user_role.dart';
 import '../../maintenance/domain/money_models.dart';
 
 /// One switch on the Notification Preferences screen (API names match).
@@ -68,6 +69,8 @@ class ServiceProvider {
     required this.phone,
     this.location,
     this.rating,
+    this.ratingCount = 0,
+    this.myRating,
   });
 
   final String id;
@@ -77,7 +80,52 @@ class ServiceProvider {
   final String name;
   final String phone;
   final String? location;
+
+  /// Residents' average (or the admin's starting rating before anyone rates).
   final double? rating;
+  final int ratingCount;
+
+  /// The current user's stars, if they've rated.
+  final int? myRating;
+}
+
+/// A resident or admin in the society (Manage Residents).
+@immutable
+class Member {
+  const Member({
+    required this.membershipId,
+    required this.name,
+    required this.phone,
+    required this.role,
+    required this.invited,
+    this.flatId,
+    this.flatLabel,
+  });
+
+  final String membershipId;
+  final String name;
+  final String phone;
+  final UserRole role;
+
+  /// Registered but hasn't signed in yet.
+  final bool invited;
+  final String? flatId;
+  final String? flatLabel;
+}
+
+/// A flat to pick when inviting someone.
+@immutable
+class FlatOption {
+  const FlatOption({required this.id, required this.label, required this.occupants, this.contacts = const []});
+
+  final String id;
+  final String label;
+
+  /// "Riya Mehta (Owner)"…
+  final List<String> occupants;
+
+  /// Residents' numbers, so the gate can call the flat.
+  final List<Contact> contacts;
 }
 
 @immutable

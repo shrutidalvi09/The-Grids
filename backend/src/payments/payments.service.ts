@@ -3,7 +3,6 @@ import path from 'node:path';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import type { AuthContext } from '../auth/auth-context.js';
 import { ApiError } from '../common/api-error.js';
-import { inr } from '../common/money.js';
 import { flatLabel, flatLabelSelect } from '../common/queries.js';
 import { ENV, type Env } from '../config/env.js';
 import type { DueType, PaymentStatus } from '../generated/prisma/enums.js';
@@ -293,8 +292,13 @@ export class PaymentsService {
     const { payment, receiptNo } = settled;
     await this.notifications.notify(payment.societyId, [payment.payerId], {
       type: 'payment',
-      title: 'Payment received',
-      body: `${inr(payment.amountPaise)} for ${payment.due.type === 'RENT' ? 'rent' : 'maintenance'}, ${periodLabel(payment.due.period)}. Receipt ${receiptNo}.`,
+      message: {
+        key: 'payment',
+        dueType: payment.due.type,
+        amountPaise: payment.amountPaise,
+        period: payment.due.period,
+        receiptNo,
+      },
       data: { paymentId },
     });
   }

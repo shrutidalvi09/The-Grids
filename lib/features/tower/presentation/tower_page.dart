@@ -13,6 +13,7 @@ import '../../facilities/presentation/facility_providers.dart';
 import '../../facilities/presentation/widgets/facility_tile.dart';
 import 'notices_page.dart';
 import 'tower_providers.dart';
+import 'visitors_page.dart';
 import 'widgets/tower_tiles.dart';
 
 const _preview = 3;
@@ -24,7 +25,10 @@ class TowerPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final isAdmin = ref.watch(currentSessionProvider)?.role == UserRole.admin;
+    final role = ref.watch(currentSessionProvider)?.role;
+    // The guard's second tab is the gate's visitor list.
+    if (role == UserRole.guard) return const VisitorsPage(asTab: true);
+    final isAdmin = role == UserRole.admin;
 
     final visitors = ref.watch(visitorsProvider(_preview));
     final notices = ref.watch(noticesProvider(_preview));

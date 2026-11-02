@@ -5,12 +5,15 @@
  */
 import { createFixture, createTestApp, login, resetDatabase, type TestApp } from './helpers.js';
 
-type Who = 'public' | 'signedIn' | 'admin' | 'owner' | 'tenant' | 'resident' | 'adminOrOwner';
-type Role = 'ADMIN' | 'OWNER' | 'TENANT';
+type Who = 'public' | 'everyone' | 'signedIn' | 'admin' | 'owner' | 'tenant' | 'resident' | 'adminOrOwner' | 'gate';
+type Role = 'ADMIN' | 'OWNER' | 'TENANT' | 'GUARD';
+const ROLES: Role[] = ['ADMIN', 'OWNER', 'TENANT', 'GUARD'];
 
 const allowed: Record<Who, Role[] | null> = {
   public: null,
-  signedIn: ['ADMIN', 'OWNER', 'TENANT'],
+  everyone: ROLES, // guards included
+  signedIn: ['ADMIN', 'OWNER', 'TENANT'], // members; guards are denied by default
+  gate: ['ADMIN', 'GUARD'],
   admin: ['ADMIN'],
   owner: ['OWNER'],
   tenant: ['TENANT'],
@@ -27,27 +30,39 @@ const RULES: Record<string, Who> = {
   'POST /v1/auth/refresh': 'public',
   'POST /v1/auth/logout': 'public',
   'POST /v1/payments/webhook': 'public', // Razorpay signature instead of a token
-  'POST /v1/auth/switch': 'signedIn',
+  'POST /v1/auth/switch': 'everyone',
   'POST /v1/memberships/invites': 'adminOrOwner',
-  'GET /v1/me': 'signedIn',
-  'PATCH /v1/me': 'signedIn',
-  'DELETE /v1/me': 'signedIn',
-  'GET /v1/me/preferences': 'signedIn',
-  'PUT /v1/me/preferences': 'signedIn',
-  'GET /v1/notifications': 'signedIn',
-  'GET /v1/notifications/unread-count': 'signedIn',
-  'POST /v1/notifications/:id/read': 'signedIn',
-  'POST /v1/notifications/read-all': 'signedIn',
-  'PUT /v1/devices': 'signedIn',
-  'DELETE /v1/devices/:token': 'signedIn',
-  'GET /v1/home': 'signedIn',
-  'GET /v1/notices': 'signedIn',
+  'GET /v1/memberships': 'admin',
+  'DELETE /v1/memberships/:id': 'admin',
+  'GET /v1/flats': 'gate',
+  'POST /v1/visitors': 'everyone', // residents: own flat only; the gate picks a flat
+  'PATCH /v1/visitors/:id/status': 'gate',
+  'PATCH /v1/visitors/:id/decision': 'resident', // the flat allows or denies a walk-in
+  'POST /v1/visitors/verify-pass': 'gate',
+  'DELETE /v1/visitors/:id': 'signedIn', // own flat's expected visitors
+  'POST /v1/events': 'admin',
+  'PATCH /v1/events/:id': 'admin',
+  'DELETE /v1/events/:id': 'admin',
+  'PUT /v1/services/:id/rating': 'signedIn',
+  'GET /v1/me': 'everyone',
+  'PATCH /v1/me': 'everyone',
+  'DELETE /v1/me': 'everyone',
+  'GET /v1/me/preferences': 'everyone',
+  'PUT /v1/me/preferences': 'everyone',
+  'GET /v1/notifications': 'everyone',
+  'GET /v1/notifications/unread-count': 'everyone',
+  'POST /v1/notifications/:id/read': 'everyone',
+  'POST /v1/notifications/read-all': 'everyone',
+  'PUT /v1/devices': 'everyone',
+  'DELETE /v1/devices/:token': 'everyone',
+  'GET /v1/home': 'everyone',
+  'GET /v1/notices': 'everyone',
   'POST /v1/notices': 'admin',
   'PATCH /v1/notices/:id': 'admin',
   'DELETE /v1/notices/:id': 'admin',
-  'GET /v1/visitors': 'signedIn',
+  'GET /v1/visitors': 'everyone',
   'GET /v1/neighbours': 'signedIn',
-  'GET /v1/events': 'signedIn',
+  'GET /v1/events': 'everyone',
   'GET /v1/complaints': 'signedIn',
   'POST /v1/complaints': 'signedIn',
   'PATCH /v1/complaints/:id/status': 'admin',
@@ -58,7 +73,7 @@ const RULES: Record<string, Who> = {
   'POST /v1/facilities/:id/bookings': 'signedIn',
   'GET /v1/bookings/mine': 'signedIn',
   'DELETE /v1/bookings/:id': 'signedIn',
-  'POST /v1/uploads': 'signedIn',
+  'POST /v1/uploads': 'everyone',
   'GET /v1/dues/mine': 'signedIn',
   'GET /v1/maintenance/config': 'signedIn',
   'PUT /v1/maintenance/config': 'admin',
@@ -96,14 +111,27 @@ const RULES: Record<string, Who> = {
   'POST /v1/household': 'resident',
   'PATCH /v1/household/:id': 'resident',
   'DELETE /v1/household/:id': 'resident',
-  'GET /v1/society': 'signedIn',
-  'GET /v1/services': 'signedIn',
+  'GET /v1/society': 'everyone',
+  'GET /v1/services': 'everyone',
   'POST /v1/services': 'admin',
   'DELETE /v1/services/:id': 'admin',
   'GET /v1/tenancy': 'resident',
   'POST /v1/tenancy': 'owner',
   'PATCH /v1/tenancy/:id': 'owner',
   'POST /v1/tenancy/:id/end': 'owner',
+  'GET /v1/daily-help': 'everyone', // residents: own flat's helpers; the gate: all
+  'POST /v1/daily-help': 'resident',
+  'DELETE /v1/daily-help/:id': 'signedIn',
+  'POST /v1/daily-help/:id/attendance': 'gate',
+  'GET /v1/daily-help/:id/attendance': 'everyone',
+  'POST /v1/sos': 'signedIn',
+  'GET /v1/sos': 'everyone',
+  'POST /v1/sos/:id/resolve': 'everyone', // the gate, admins, or the household
+  'GET /v1/vehicles': 'signedIn',
+  'POST /v1/vehicles': 'signedIn',
+  'PATCH /v1/vehicles/:id': 'admin', // parking slot
+  'DELETE /v1/vehicles/:id': 'signedIn',
+  'GET /v1/vehicles/search': 'gate',
 };
 
 let t: TestApp;
@@ -117,6 +145,7 @@ beforeAll(async () => {
   tokens.ADMIN = (await login(t, fx.society.id, fx.admin.phone, 'ADMIN')).accessToken;
   tokens.OWNER = (await login(t, fx.society.id, fx.owner.phone, 'OWNER')).accessToken;
   tokens.TENANT = (await login(t, fx.society.id, fx.tenant.phone, 'TENANT')).accessToken;
+  tokens.GUARD = (await login(t, fx.society.id, fx.guard.phone, 'GUARD')).accessToken;
 });
 afterAll(async () => {
   await t.app.close();
@@ -155,7 +184,7 @@ describe('access rules', () => {
   it.each(
     Object.entries(RULES).flatMap(([route, who]) => {
       const roles = allowed[who];
-      return roles ? (['ADMIN', 'OWNER', 'TENANT'] as Role[]).filter((r) => !roles.includes(r)).map((r) => [route, r]) : [];
+      return roles ? ROLES.filter((r) => !roles.includes(r)).map((r) => [route, r]) : [];
     }),
   )('%s refuses %s', async (route, role) => {
     const res = await send(route, tokens[role as Role]);

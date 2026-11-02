@@ -88,8 +88,9 @@ export async function createFixture(prisma: PrismaService) {
   });
   const owner = await person('Omkar Owner', '+919800000002', 'OWNER', flat102.id);
   const tenant = await person('Tara Tenant', '+919800000003', 'TENANT', flat102.id);
+  const guard = await person('Gopal Guard', '+919800000004', 'GUARD', null);
 
-  return { society, tower, flat101, flat102, admin, adminAsOwner, owner, tenant };
+  return { society, tower, flat101, flat102, admin, adminAsOwner, owner, tenant, guard };
 }
 
 /** Full OTP login; returns the session response body. */

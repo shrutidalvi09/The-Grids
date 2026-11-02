@@ -9,7 +9,7 @@ import {
   Matches,
   ValidateIf,
 } from 'class-validator';
-import { Auth, type AuthContext } from '../auth/auth-context.js';
+import { Auth, type AuthContext, Everyone } from '../auth/auth-context.js';
 import { ApiError } from '../common/api-error.js';
 import { Prisma } from '../generated/prisma/client.js';
 import { MeService, type MeView } from '../me/me.service.js';
@@ -64,6 +64,7 @@ export interface PreferencesView {
 }
 
 /** Edit profile, preferences and delete account (Profile → Account Options). */
+@Everyone()
 @Controller('me')
 export class AccountController {
   constructor(

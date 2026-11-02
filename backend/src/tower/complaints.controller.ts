@@ -109,11 +109,14 @@ export class ComplaintsController {
     });
     if (count === 0) throw ApiError.notFound('Complaint not found');
     const complaint = await this.prisma.complaint.findUniqueOrThrow({ where: { id }, include });
-    const statusText = { OPEN: 'reopened', IN_PROGRESS: 'in progress', RESOLVED: 'resolved' }[body.status];
     await this.notifications.notify(
       auth.societyId,
       [complaint.raisedById],
-      { type: 'complaint', title: 'Complaint update', body: `"${complaint.title}" is ${statusText}.`, data: { complaintId: id } },
+      {
+        type: 'complaint',
+        message: { key: 'complaint', title: complaint.title, status: body.status },
+        data: { complaintId: id },
+      },
       auth.userId,
     );
     return toView(complaint);

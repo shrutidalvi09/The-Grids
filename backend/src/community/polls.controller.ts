@@ -118,7 +118,7 @@ export class PollsController {
     await this.notifications.notify(
       auth.societyId,
       await this.notifications.activeMemberIds(auth.societyId),
-      { type: 'poll', title: 'New poll', body: `${poll.question} Cast your vote.`, data: { pollId: poll.id } },
+      { type: 'poll', message: { key: 'poll_new', question: poll.question }, data: { pollId: poll.id } },
       auth.userId,
     );
     return this.view(auth, poll);

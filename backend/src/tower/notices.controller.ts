@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsDate, IsOptional, IsString, Length, MaxLength } from 'class-validator';
-import { Auth, type AuthContext, Roles } from '../auth/auth-context.js';
+import { Auth, type AuthContext, Everyone, Roles } from '../auth/auth-context.js';
 import { ApiError } from '../common/api-error.js';
 import { towerScope } from '../common/member.js';
 import { LimitQuery } from '../common/queries.js';
@@ -64,6 +64,7 @@ export class NoticesController {
     private readonly notifications: NotificationsService,
   ) {}
 
+  @Everyone()
   @Get()
   async list(@Auth() auth: AuthContext, @Query() query: LimitQuery): Promise<NoticeView[]> {
     const notices = await this.prisma.notice.findMany({

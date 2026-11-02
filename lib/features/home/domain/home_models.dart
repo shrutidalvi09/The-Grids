@@ -72,6 +72,36 @@ final class BillsClear extends ChecklistItem {
   const BillsClear();
 }
 
+/// Guards: what's waiting at the gate.
+@immutable
+class GateSummary {
+  const GateSummary({
+    required this.awaitingApproval,
+    required this.expected,
+    required this.inside,
+    required this.parcels,
+    required this.staffInside,
+  });
+
+  final int awaitingApproval;
+  final int expected;
+  final int inside;
+  final int parcels;
+  final int staffInside;
+}
+
+/// An unresolved SOS (shown to the gate, admins and the household).
+@immutable
+class ActiveSos {
+  const ActiveSos({required this.id, required this.createdAt, this.flatLabel, this.raisedBy, this.raisedByPhone});
+
+  final String id;
+  final String? flatLabel;
+  final String? raisedBy;
+  final String? raisedByPhone;
+  final DateTime createdAt;
+}
+
 @immutable
 class HomeData {
   const HomeData({
@@ -83,6 +113,8 @@ class HomeData {
     this.checklist = const [],
     this.myBookingsToday = const [],
     this.facilities = const [],
+    this.gate,
+    this.activeSos = const [],
   });
 
   final HomeAlert? alert;
@@ -97,4 +129,8 @@ class HomeData {
   final List<ChecklistItem> checklist;
   final List<Booking> myBookingsToday;
   final List<Facility> facilities;
+
+  /// Guard dashboard.
+  final GateSummary? gate;
+  final List<ActiveSos> activeSos;
 }

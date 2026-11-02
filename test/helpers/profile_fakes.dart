@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:the_grids/core/network/api_exception.dart';
 import 'package:the_grids/features/auth/domain/session.dart';
+import 'package:the_grids/features/auth/domain/user_role.dart';
 import 'package:the_grids/features/maintenance/domain/money_models.dart';
 import 'package:the_grids/features/notifications/data/notifications_repository.dart';
 import 'package:the_grids/features/profile/data/profile_repository.dart';
@@ -31,7 +32,7 @@ class FakeProfileRepository extends ProfileRepository {
   FakeProfileRepository() : super(_unused);
 
   Preferences prefs = Preferences(notifications: {for (final p in NotificationPref.values) p: true});
-  List<HouseholdMember> members = [
+  List<HouseholdMember> householdList = [
     const HouseholdMember(id: 'h1', name: 'Chetan Dalvi', relation: 'Father', phone: '+919811111111'),
   ];
   List<ServiceProvider> serviceList = const [
@@ -40,6 +41,30 @@ class FakeProfileRepository extends ProfileRepository {
     ServiceProvider(id: 's3', category: 'Plumber', name: 'Raju Plumbing Works', phone: '+919000010015'),
   ];
   Tenancy? currentTenancy;
+  List<Member> memberList = const [
+    Member(membershipId: 'm1', name: 'Shruti Chetan Dalvi', phone: '+919000000001', role: UserRole.admin, invited: false),
+    Member(
+      membershipId: 'm2',
+      name: 'Riya Mehta',
+      phone: '+919000000002',
+      role: UserRole.owner,
+      invited: false,
+      flatId: 'fa1',
+      flatLabel: 'Tower-A, 101',
+    ),
+    Member(
+      membershipId: 'm3',
+      name: 'Nikhil Joshi',
+      phone: '+919000000020',
+      role: UserRole.owner,
+      invited: true,
+      flatId: 'fa2',
+      flatLabel: 'Tower-A, 102',
+    ),
+  ];
+  final invites = <(String, String, UserRole, String?)>[];
+  final removedMembers = <String>[];
+  final ratings = <(String, int)>[];
   Object? deleteError;
 
   AppSession? session;
@@ -96,15 +121,15 @@ class FakeProfileRepository extends ProfileRepository {
   }
 
   @override
-  Future<List<HouseholdMember>> household() async => List.of(members);
+  Future<List<HouseholdMember>> household() async => List.of(householdList);
 
   @override
   Future<void> addHouseholdMember(HouseholdInput input) async {
-    members = [...members, HouseholdMember(id: 'h${members.length + 1}', name: input.name, relation: input.relation, phone: input.phone)];
+    householdList = [...householdList, HouseholdMember(id: 'h${householdList.length + 1}', name: input.name, relation: input.relation, phone: input.phone)];
   }
 
   @override
-  Future<void> removeHouseholdMember(String id) async => members = members.where((m) => m.id != id).toList();
+  Future<void> removeHouseholdMember(String id) async => householdList = householdList.where((m) => m.id != id).toList();
 
   @override
   Future<List<ServiceProvider>> services() async => serviceList;
@@ -119,6 +144,37 @@ class FakeProfileRepository extends ProfileRepository {
 
   @override
   Future<Tenancy?> tenancy() async => currentTenancy;
+
+  @override
+  Future<List<Member>> members() async => memberList;
+
+  @override
+  Future<List<FlatOption>> flats() async => const [
+        FlatOption(id: 'fa1', label: 'Tower-A, 101', occupants: ['Riya Mehta']),
+        FlatOption(id: 'fa3', label: 'Tower-A, 103', occupants: []),
+      ];
+
+  @override
+  Future<void> invite({required String name, required String phone, required UserRole role, String? flatId}) async =>
+      invites.add((name, phone, role, flatId));
+
+  @override
+  Future<void> removeMember(String membershipId) async {
+    removedMembers.add(membershipId);
+    memberList = memberList.where((m) => m.membershipId != membershipId).toList();
+  }
+
+  @override
+  Future<ServiceProvider> rateService(String id, int stars) async {
+    ratings.add((id, stars));
+    serviceList = [
+      for (final s in serviceList)
+        s.id == id
+            ? ServiceProvider(id: s.id, category: s.category, name: s.name, phone: s.phone, rating: stars.toDouble(), ratingCount: 1, myRating: stars)
+            : s,
+    ];
+    return serviceList.firstWhere((s) => s.id == id);
+  }
 
   @override
   Future<Tenancy> addTenant(TenancyInput input) async {

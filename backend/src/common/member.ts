@@ -1,6 +1,11 @@
 import type { AuthContext } from '../auth/auth-context.js';
 import type { PrismaService } from '../prisma/prisma.service.js';
 
+/** Guards and admins work the gate: they see every flat's visitors. */
+export function isGate(auth: Pick<AuthContext, 'role'>): boolean {
+  return auth.role === 'ADMIN' || auth.role === 'GUARD';
+}
+
 /** The tower of the caller's flat (null for admins without a flat). */
 export async function towerIdOf(prisma: PrismaService, auth: AuthContext): Promise<string | null> {
   if (!auth.flatId) return null;

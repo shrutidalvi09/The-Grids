@@ -14,7 +14,6 @@ import {
 } from 'class-validator';
 import { Auth, type AuthContext, Roles } from '../auth/auth-context.js';
 import { ApiError } from '../common/api-error.js';
-import { inr } from '../common/money.js';
 import { normalizeIndianMobile } from '../common/phone.js';
 import { flatLabel, flatLabelSelect } from '../common/queries.js';
 import { Role } from '../generated/prisma/enums.js';
@@ -166,8 +165,12 @@ export class TenancyController {
 
     await this.notifications.notify(auth.societyId, [tenancy.tenantId], {
       type: 'tenancy',
-      title: 'Welcome to your new home',
-      body: `${tenancy.owner.name} added you as the tenant of ${flatLabel(tenancy.flat)}. Rent: ${inr(tenancy.monthlyRentPaise)} a month.`,
+      message: {
+        key: 'tenancy',
+        owner: tenancy.owner.name,
+        flat: flatLabel(tenancy.flat) ?? '',
+        amountPaise: tenancy.monthlyRentPaise,
+      },
       data: { tenancyId: tenancy.id },
     });
     return { tenancy: await this.view(auth.societyId, tenancy) };

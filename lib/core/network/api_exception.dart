@@ -75,6 +75,11 @@ String describeError(AppLocalizations l10n, Object error) {
     'LAST_ADMIN' => l10n.errorLastAdmin,
     'TENANCY_EXISTS' => l10n.errorTenancyExists,
     'ALREADY_MEMBER' => l10n.errorAlreadyMember,
+    'VISITOR_ARRIVED' => l10n.errorVisitorArrived,
+    'LAST_ADMIN_REMOVE' => l10n.errorLastAdminRemove,
+    'VISITOR_DECIDED' => l10n.errorVisitorDecided,
+    'PASS_NOT_FOUND' => l10n.errorPassNotFound,
+    'VEHICLE_EXISTS' => l10n.errorVehicleExists,
     _ => l10n.errorGeneric,
   };
 }

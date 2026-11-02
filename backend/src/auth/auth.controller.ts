@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { Auth, type AuthContext, Public } from './auth-context.js';
+import { Auth, type AuthContext, Everyone, Public } from './auth-context.js';
 import { RefreshTokenDto, RequestOtpDto, SwitchMembershipDto, VerifyOtpDto } from './auth.dto.js';
 import { AuthService, type OtpChallengeView, type SessionView } from './auth.service.js';
 
@@ -39,6 +39,7 @@ export class AuthController {
     await this.auth.logout(body.refreshToken);
   }
 
+  @Everyone()
   @Post('switch')
   @HttpCode(HttpStatus.OK)
   switch(@Auth() auth: AuthContext, @Body() body: SwitchMembershipDto): Promise<SessionView> {

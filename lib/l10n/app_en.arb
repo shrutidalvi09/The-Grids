@@ -970,5 +970,421 @@
     }
   },
   "offlineBanner": "You're offline — showing saved data",
-  "costBreakdown": "Cost breakdown"
+  "costBreakdown": "Cost breakdown",
+  "addEvent": "Add Event",
+  "addVisitor": "Add Visitor",
+  "addVisitorHint": "Add guests, deliveries or daily help in advance so the gate lets them in quickly.",
+  "cancelVisitor": "Cancel visitor",
+  "checkIn": "Check in",
+  "checkOut": "Check out",
+  "deleteEventConfirm": "Delete \"{title}\"?",
+  "@deleteEventConfirm": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "editEvent": "Edit Event",
+  "errorLastAdminRemove": "The society needs at least one admin.",
+  "errorVisitorArrived": "This visitor has already arrived.",
+  "eventActions": "Event options",
+  "eventDeleted": "Event deleted",
+  "eventNotifyNote": "Everyone in the society will be notified.",
+  "eventSaved": "Event saved",
+  "expectedAtField": "Expected at",
+  "flatVacant": "vacant",
+  "holdAtGate": "Parcel held at gate",
+  "invitedStatus": "Invited",
+  "inviteHint": "They sign in with this number using a one-time code.",
+  "inviteResident": "Invite",
+  "inviteSent": "{name} can now sign in",
+  "@inviteSent": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "logVisitor": "Log Visitor",
+  "noMatches": "No one matches your search",
+  "purposeOptionalField": "Purpose (optional)",
+  "rate": "Rate",
+  "rateService": "Rate {name}",
+  "@rateService": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ratingSaved": "Thanks for rating!",
+  "ratingSummary": "Rated {rating} by {count, plural, =0{the society} =1{1 resident} other{{count} residents}}",
+  "@ratingSummary": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeAccess": "Remove access",
+  "removeResidentBody": "They'll be signed out and can't use the app for this society any more.",
+  "residentRemoved": "{name} removed",
+  "@residentRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "residentsTitle": "Manage Residents",
+  "sendInvite": "Add",
+  "starsLabel": "{count, plural, =1{1 star} other{{count} stars}}",
+  "@starsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "submitRating": "Submit rating",
+  "visitorAdded": "Visitor added. The gate will let them in.",
+  "visitorArrivedAt": "Arrived at {time}",
+  "@visitorArrivedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "visitorCancelled": "Visitor cancelled",
+  "visitorExpectedAt": "Expected {time}",
+  "@visitorExpectedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "visitorLeftAt": "Left at {time}",
+  "@visitorLeftAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "visitorLogged": "Visitor logged",
+  "visitorNameHint": "e.g. Rekha, Amazon, Rahul",
+  "visitorPurposeHint": "e.g. Maid, Parcel, Dinner guest",
+  "visitorTypeDelivery": "Delivery",
+  "visitorTypeGuest": "Guest",
+  "visitorTypeService": "Help",
+  "visitorUpdated": "Visitor updated",
+  "yourRating": "{count, plural, =1{You gave 1 star} other{You gave {count} stars}}",
+  "@yourRating": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "add": "Add",
+  "addDailyHelp": "Add Help",
+  "addVehicle": "Add Vehicle",
+  "allow": "Allow",
+  "deny": "Deny",
+  "arrivalAsk": "Ask flat",
+  "arrivalLetIn": "Let in",
+  "arrivalLater": "Later",
+  "assignSlot": "Assign parking slot",
+  "atTheGate": "At the gate",
+  "attendanceThisMonth": "Attendance this month",
+  "cameraUnavailable": "The camera is not available. Type the code instead.",
+  "codeLabel": "Code {code}",
+  "@codeLabel": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyHelpAdded": "{name} added. Gate code: {code}",
+  "@dailyHelpAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyHelpHint": "Add your maid, cook or driver. They get a gate code, and you see when they come.",
+  "dailyHelpPhoneHint": "Same number in another flat = same person",
+  "dailyHelpRemoved": "{name} removed",
+  "@dailyHelpRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyHelpTitle": "Daily Help",
+  "daysThisMonth": "{count, plural, =0{No days this month} =1{1 day this month} other{{count} days this month}}",
+  "@daysThisMonth": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "findVehicleHint": "Type part of the number, e.g. 1234",
+  "findVehicleTitle": "Find a vehicle",
+  "freeSlot": "Free slot",
+  "gateAwaitingApproval": "Waiting for flat",
+  "gateCode": "Gate code",
+  "gateExpected": "Expected today",
+  "gateInside": "Inside now",
+  "gateParcels": "Parcels held",
+  "guestPassFor": "For {name}. Valid once at the gate.",
+  "@guestPassFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "guestPassHint": "Share this with your guest. The guard scans the QR or types the code.",
+  "guestPassQrLabel": "Gate pass QR code for code {code}",
+  "@guestPassQrLabel": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "guestPassShareText": "Hi {name}, your gate pass code is {code}. Show it at the security gate.",
+  "@guestPassShareText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "guestPassShareTextAt": "Hi {name}, your gate pass code is {code} for {time}. Show it at the security gate.",
+  "@guestPassShareTextAt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "guestPassTitle": "Gate pass",
+  "guestVehicle": "Vehicle {number}",
+  "@guestVehicle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "guestVehicleField": "Vehicle number (optional)",
+  "helpCleaner": "Cleaner",
+  "helpCook": "Cook",
+  "helpDriver": "Driver",
+  "helpKindField": "Works as",
+  "helpMaid": "Maid",
+  "helpNanny": "Nanny",
+  "helpOther": "Other",
+  "letIn": "Let in",
+  "markIn": "Mark in",
+  "markOut": "Mark out",
+  "navGate": "Gate",
+  "navVisitors": "Visitors",
+  "newVisitor": "New visitor",
+  "newVisitorHint": "Ask the flat, or let them in",
+  "noDailyHelp": "No daily help added",
+  "noSlot": "No slot",
+  "noVehicleFound": "No vehicle matches \"{query}\"",
+  "@noVehicleFound": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noVehicles": "No vehicles registered",
+  "noVisitsYet": "No visits yet this month",
+  "parkingSlotField": "Parking slot",
+  "passCodeField": "Pass code",
+  "passCodeHint": "Enter the 5 or 6-digit code",
+  "quickActions": "Quick actions",
+  "removeDailyHelp": "Remove from my flat",
+  "removeDailyHelpBody": "Their gate code stops working for your flat.",
+  "removeDailyHelpConfirm": "Remove {name}?",
+  "@removeDailyHelpConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removeVehicle": "Remove vehicle",
+  "removeVehicleConfirm": "Remove {number}?",
+  "@removeVehicleConfirm": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "roleGuard": "Security Guard",
+  "roleGuardShort": "Guard",
+  "roleLoginGuard": "Security Guard Login",
+  "scanQr": "Scan QR",
+  "scanQrHint": "Point the camera at the guest's gate pass",
+  "searchStaffHint": "Search by name or flat",
+  "sharePass": "Share pass",
+  "showGatePass": "Show gate pass",
+  "slotLabel": "Slot {slot}",
+  "@slotLabel": {
+    "placeholders": {
+      "slot": {
+        "type": "String"
+      }
+    }
+  },
+  "slotSaved": "Parking slot saved",
+  "sosActiveBody": "{name} raised the alarm at {time}.",
+  "@sosActiveBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sosActiveTitle": "SOS: {flat}",
+  "@sosActiveTitle": {
+    "placeholders": {
+      "flat": {
+        "type": "String"
+      }
+    }
+  },
+  "sosButton": "Emergency SOS",
+  "sosConfirmBody": "Security, the admins and your family will be alerted right away with your flat number.",
+  "sosConfirmTitle": "Send an emergency alert?",
+  "sosMarkResolved": "Mark handled",
+  "sosNoFlat": "Society office",
+  "sosNoteField": "What happened? (optional)",
+  "sosNoteHint": "e.g. Medical, Fire, Intruder",
+  "sosResolved": "Marked as handled",
+  "sosSend": "Send alert",
+  "sosSent": "Alert sent. Help is on the way.",
+  "staffCodeShareText": "{name}, your gate code is {code}. Tell it to the guard each day.",
+  "@staffCodeShareText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "staffInside": "Inside",
+  "staffInsideCount": "{count, plural, =0{Nobody inside} =1{1 inside now} other{{count} inside now}}",
+  "@staffInsideCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staffMarkedIn": "{name} marked in",
+  "@staffMarkedIn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "staffMarkedOut": "{name} marked out",
+  "@staffMarkedOut": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "validPass": "Valid pass",
+  "vehicleAdded": "Vehicle added",
+  "vehicleBike": "Two-wheeler",
+  "vehicleCar": "Car",
+  "vehicleDescriptionField": "Make and colour (optional)",
+  "vehicleDescriptionHint": "e.g. White Swift",
+  "vehicleNumberField": "Vehicle number",
+  "vehicleNumberInvalid": "Enter a valid vehicle number",
+  "vehicleOther": "Other",
+  "vehicleRemoved": "Vehicle removed",
+  "vehiclesHint": "Register your cars and bikes so the guard knows they belong here.",
+  "vehiclesParkingTitle": "Vehicles & Parking",
+  "vehiclesTitle": "My Vehicles",
+  "vehicleTypeField": "Type",
+  "verifyPass": "Check code",
+  "verifyPassHint": "A guest's gate pass, or a maid's or driver's daily code",
+  "verifyPassTitle": "Check a pass",
+  "visitorAllowed": "{name} allowed in",
+  "@visitorAllowed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "visitorAskedFlat": "Asked the flat about {name}",
+  "@visitorAskedFlat": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "visitorAwaitingApproval": "Waiting",
+  "visitorDenied": "Denied",
+  "visitorDeniedDone": "{name} denied",
+  "@visitorDeniedDone": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "visitorLetIn": "{name} let in",
+  "@visitorLetIn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorPassNotFound": "No valid pass with this code. It may be used already.",
+  "errorVehicleExists": "This vehicle is already registered in the society.",
+  "errorVisitorDecided": "Someone from your flat has already answered."
 }

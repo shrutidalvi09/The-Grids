@@ -10,6 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Everyone } from '../auth/auth-context.js';
 import { ApiError } from '../common/api-error.js';
 import { ENV, type Env } from '../config/env.js';
 
@@ -32,6 +33,7 @@ export function sniffImage(bytes: Buffer): 'jpg' | 'png' | 'webp' | null {
  * a facility or complaint. Local disk for development; swap for object
  * storage (S3/R2) before production.
  */
+@Everyone() // guards attach visitor photos
 @Controller('uploads')
 export class UploadsController {
   constructor(@Inject(ENV) private readonly env: Env) {}

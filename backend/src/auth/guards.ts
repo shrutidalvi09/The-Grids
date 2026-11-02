@@ -67,8 +67,12 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (!roles?.length) return true;
     const auth = context.switchToHttp().getRequest<AuthedRequest>().auth;
+    if (!roles?.length) {
+      // Guards are denied by default; resident and admin routes stay closed to them.
+      if (auth?.role === 'GUARD') throw ApiError.forbidden();
+      return true;
+    }
     if (!auth || !roles.includes(auth.role)) throw ApiError.forbidden();
     return true;
   }

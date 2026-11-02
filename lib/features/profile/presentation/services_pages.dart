@@ -157,13 +157,19 @@ class ServiceCategoryPage extends ConsumerWidget {
                   contentPadding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.xs, AppSpacing.xs, AppSpacing.xs),
                   leading: PersonAvatar(name: s.name),
                   title: Text(s.name),
-                  subtitle: Text(
-                    [
-                      ?s.location,
-                      if (s.rating != null) '★ ${s.rating!.toStringAsFixed(1)}',
-                      formatPhone(s.phone),
-                    ].join(' · '),
-                    style: TextStyle(color: slate),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text([?s.location, formatPhone(s.phone)].join(' · '), style: TextStyle(color: slate)),
+                      // Tap the stars to rate (or change your rating).
+                      InkWell(
+                        onTap: () => _rate(context, ref, s),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                          child: _RatingLine(service: s),
+                        ),
+                      ),
+                    ],
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -241,5 +247,115 @@ Future<void> _showAddService(BuildContext context, WidgetRef ref) async {
   if (added == true) {
     ref.invalidate(servicesProvider);
     messenger.showSnackBar(SnackBar(content: Text(l10n.serviceAdded)));
+  }
+}
+
+/// "★ 4.5 (12)  · Rate" — or "Rate" when nobody has yet.
+class _RatingLine extends StatelessWidget {
+  const _RatingLine({required this.service});
+
+  final ServiceProvider service;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final s = service;
+    return Semantics(
+      button: true,
+      label: s.rating == null ? l10n.rateService(s.name) : l10n.ratingSummary(s.rating!.toStringAsFixed(1), s.ratingCount),
+      excludeSemantics: true,
+      // Wraps onto a second line in narrow rows or long languages.
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: AppSpacing.sm,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.star_rounded, size: 18, color: GridsColors.of(context).warning),
+              if (s.rating != null) ...[
+                const SizedBox(width: 2),
+                Text(
+                  s.ratingCount > 0 ? '${s.rating!.toStringAsFixed(1)} (${s.ratingCount})' : s.rating!.toStringAsFixed(1),
+                  style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ],
+          ),
+          Text(
+            s.myRating == null ? l10n.rate : l10n.yourRating(s.myRating!),
+            style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.secondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+Future<void> _rate(BuildContext context, WidgetRef ref, ServiceProvider service) async {
+  final l10n = context.l10n;
+  final messenger = ScaffoldMessenger.of(context);
+  final stars = await showModalBottomSheet<int>(
+    context: context,
+    useRootNavigator: true, // above the bottom nav bar
+    useSafeArea: true,
+    builder: (sheet) => _StarPicker(service: service),
+  );
+  if (stars == null) return;
+  try {
+    await ref.read(profileRepositoryProvider).rateService(service.id, stars);
+    ref.invalidate(servicesProvider);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.ratingSaved)));
+  } catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text(describeError(l10n, e))));
+  }
+}
+
+class _StarPicker extends StatefulWidget {
+  const _StarPicker({required this.service});
+
+  final ServiceProvider service;
+
+  @override
+  State<_StarPicker> createState() => _StarPickerState();
+}
+
+class _StarPickerState extends State<_StarPicker> {
+  late int _stars = widget.service.myRating ?? 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final warning = GridsColors.of(context).warning;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.xl),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l10n.rateService(widget.service.name), style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
+          const SizedBox(height: AppSpacing.lg),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (var i = 1; i <= 5; i++)
+                IconButton(
+                  tooltip: l10n.starsLabel(i),
+                  iconSize: 40,
+                  onPressed: () => setState(() => _stars = i),
+                  icon: AnimatedScale(
+                    scale: i <= _stars ? 1.1 : 1,
+                    duration: const Duration(milliseconds: 150),
+                    child: Icon(i <= _stars ? Icons.star_rounded : Icons.star_outline_rounded, color: warning),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          PrimaryButton(label: l10n.submitRating, onPressed: _stars == 0 ? null : () => Navigator.of(context).pop(_stars)),
+        ],
+      ),
+    );
   }
 }

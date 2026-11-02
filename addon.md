@@ -7,28 +7,28 @@ Features that could be added next, grouped by area. Each has a rough size:
 
 ---
 
-## 1. Finish what's half-built (do these first)
+## 1. Finish what's half-built ✅ done (batch 1)
 
 These have a database model or an API endpoint already, but no way to use them in the app yet.
 
 | Add-on | What it does | Size | Builds on |
 |---|---|---|---|
-| **Invite residents (admin screen)** | Admin adds an owner/tenant/admin by mobile number and picks the flat. Today this only exists as an API call. | S | `POST /v1/memberships/invites` |
-| **Pre-approve visitors** | Resident adds an expected guest, maid or delivery from the app, and it appears in the gate log. Today visitors can only be viewed. | M | `Visitor` model, Visitors page |
-| **Create and edit events (admin)** | Events are shown on Home but can only be added through the seed data. | S | `Event` model, Events page |
-| **Rate service providers** | Residents give 1–5 stars to the maid, plumber and so on; the average shows in the directory. | S | `rating` field on `ServiceProvider` |
-| **Translate server notifications** | Push and in-app notification text is English only; send it in each user's language. | S | `User.language`, NotificationsService |
+| ✅ **Invite residents (admin screen)** | Admin adds an owner/tenant/admin by mobile number and picks the flat. Today this only exists as an API call. | S | `POST /v1/memberships/invites` |
+| ✅ **Pre-approve visitors** | Resident adds an expected guest, maid or delivery from the app, and it appears in the gate log. Today visitors can only be viewed. | M | `Visitor` model, Visitors page |
+| ✅ **Create and edit events (admin)** | Events are shown on Home but can only be added through the seed data. | S | `Event` model, Events page |
+| ✅ **Rate service providers** | Residents give 1–5 stars to the maid, plumber and so on; the average shows in the directory. | S | `rating` field on `ServiceProvider` |
+| ✅ **Translate server notifications** | Push and in-app notification text is English only; send it in each user's language. | S | `User.language`, NotificationsService |
 
-## 2. Security and gate
+## 2. Security and gate ✅ done (batch 2)
 
 | Add-on | What it does | Size | Notes |
 |---|---|---|---|
-| **Guard / security app (4th role)** | A simple app for the gate: check visitors in and out, take a photo, call the flat. | L | New `GUARD` role; reuses the Visitor model |
-| **Guest pass (QR / code)** | Resident shares a one-time code or QR with a guest; the guard scans it at the gate. | M | Needs the guard app |
-| **Approve at the gate** | Unexpected visitor → push to the flat: "Allow / Deny" in one tap. | M | Push notifications already wired |
-| **Daily help attendance** | Maid, cook and driver check-in history per flat; monthly attendance report. | M | Checklist on Home already shows check-ins |
-| **SOS / panic button** | One tap alerts the guards, admins and household members, with the flat number. | S | Notifications + "alert" type exist |
-| **Vehicles and parking** | Register vehicles per flat, assign parking slots, guest parking requests. | M | |
+| ✅ **Guard / security app (4th role)** | A simple app for the gate: check visitors in and out, take a photo, call the flat. | L | New `GUARD` role; reuses the Visitor model |
+| ✅ **Guest pass (QR / code)** | Resident shares a one-time code or QR with a guest; the guard scans it at the gate. | M | Needs the guard app |
+| ✅ **Approve at the gate** | Unexpected visitor → push to the flat: "Allow / Deny" in one tap. | M | Push notifications already wired |
+| ✅ **Daily help attendance** | Maid, cook and driver check-in history per flat; monthly attendance report. | M | Checklist on Home already shows check-ins |
+| ✅ **SOS / panic button** | One tap alerts the guards, admins and household members, with the flat number. | S | Notifications + "alert" type exist |
+| ✅ **Vehicles and parking** | Register vehicles per flat, assign parking slots, guest parking requests. | M | |
 
 ## 3. Money and accounts
 
@@ -102,6 +102,12 @@ These have a database model or an API endpoint already, but no way to use them i
 | **Home screen widget** | Shows the dues amount and today's visitors without opening the app. | M | |
 
 ---
+
+## Progress
+
+- **Batch 1 (section 1): done.** Manage Residents (admin: invite by mobile, flat picker, remove access), pre-approved visitors (residents add/cancel; admins check in, hold parcels, check out; the flat is notified), events (admin create/edit/delete; everyone notified), service ratings (1–5 stars, average and count), and server notifications in each user's language.
+- **Batch 2 (section 2): done.** Security Guard role (own login, Gate / Visitors / Profile tabs, blocked from resident screens in the app and the API), guest passes (6-digit one-time code + QR to share; guard types or scans it), Allow / Deny for walk-ins (push to the flat, first answer wins, guard told), daily help with permanent 5-digit gate codes and monthly attendance, SOS button (guards + admins + household, ignores notification switches), vehicles per flat with admin parking slots, guest vehicle numbers, and the gate's "whose car is this?" search.
+- Next: batch 3, money and accounts (section 3).
 
 ## Suggested order
 

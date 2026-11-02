@@ -24,6 +24,7 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final role = ref.watch(currentSessionProvider)?.role ?? UserRole.owner;
     final online = ref.watch(onlineStatusProvider);
+    final branches = navBranches(role);
     return Scaffold(
       key: ref.watch(shellScaffoldKeyProvider),
       drawer: const AppDrawer(),
@@ -36,11 +37,11 @@ class AppShell extends ConsumerWidget {
       ),
       bottomNavigationBar: GridsBottomNav(
         destinations: navDestinations(context.l10n, role),
-        selectedIndex: navigationShell.currentIndex,
+        selectedIndex: branches.indexOf(navigationShell.currentIndex).clamp(0, branches.length - 1),
         // Re-tapping the current tab returns it to its first page.
         onSelected: (index) => navigationShell.goBranch(
-          index,
-          initialLocation: index == navigationShell.currentIndex,
+          branches[index],
+          initialLocation: branches[index] == navigationShell.currentIndex,
         ),
       ),
     );

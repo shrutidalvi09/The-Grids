@@ -8,6 +8,8 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../auth/domain/user_role.dart';
 import '../../auth/presentation/session_controller.dart';
+import '../../gate/presentation/gate_dashboard.dart';
+import '../../gate/presentation/sos_widgets.dart';
 import 'home_providers.dart';
 import 'widgets/home_header.dart';
 import 'widgets/home_sections.dart';
@@ -24,8 +26,11 @@ class HomePage extends ConsumerWidget {
     final home = ref.watch(homeProvider);
     if (session == null) return const SizedBox.shrink();
 
+    final isGuard = session.role == UserRole.guard;
     return GridsPage(
-      title: l10n.navHome,
+      title: isGuard ? l10n.navGate : l10n.navHome,
+      // Guards respond to alerts; everyone else can raise one.
+      actions: [if (!isGuard) const SosButton()],
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(homeProvider.future),
         child: ListView(
@@ -47,8 +52,12 @@ class HomePage extends ConsumerWidget {
                 ),
               ],
               data: (data) => [
+                if (data.activeSos.isNotEmpty) SosBanners(alerts: data.activeSos),
                 if (data.alert != null) AlertBanner(alert: data.alert!),
-                if (session.role == UserRole.admin) ...[
+                if (isGuard) ...[
+                  if (data.alert != null) const SizedBox(height: AppSpacing.md),
+                  GateDashboard(summary: data.gate),
+                ] else if (session.role == UserRole.admin) ...[
                   if (data.stats != null) StatsGrid(stats: data.stats!),
                   RecentComplaints(complaints: data.recentComplaints),
                   UpcomingEvents(events: data.upcomingEvents),

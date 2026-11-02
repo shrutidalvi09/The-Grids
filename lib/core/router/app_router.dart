@@ -16,6 +16,8 @@ import '../../features/community/presentation/community_form_page.dart';
 import '../../features/community/presentation/community_page.dart';
 import '../../features/community/presentation/poll_form_page.dart';
 import '../../features/community/presentation/polls_page.dart';
+import '../../features/gate/presentation/daily_help_pages.dart';
+import '../../features/gate/presentation/vehicles_pages.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/maintenance/domain/money_models.dart';
 import '../../features/maintenance/presentation/defaulters_page.dart';
@@ -31,6 +33,7 @@ import '../../features/profile/presentation/account_pages.dart';
 import '../../features/profile/presentation/help_about_pages.dart';
 import '../../features/profile/presentation/household_page.dart';
 import '../../features/profile/presentation/profile_page.dart';
+import '../../features/profile/presentation/residents_page.dart';
 import '../../features/profile/presentation/services_pages.dart';
 import '../../features/profile/presentation/settings_pages.dart';
 import '../../features/profile/presentation/tenancy_pages.dart';
@@ -41,6 +44,7 @@ import '../../features/facilities/presentation/facility_form_page.dart';
 import '../../features/facilities/presentation/my_bookings_page.dart';
 import '../../features/tower/domain/tower_models.dart';
 import '../../features/tower/presentation/complaints_page.dart';
+import '../../features/tower/presentation/event_form_page.dart';
 import '../../features/tower/presentation/events_page.dart';
 import '../../features/tower/presentation/neighbours_page.dart';
 import '../../features/tower/presentation/notice_form_page.dart';
@@ -120,6 +124,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.events,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (_, _) => const EventsPage(),
+        routes: [
+          // Admin only (see restrictedRoutes).
+          GoRoute(
+            path: 'manage',
+            parentNavigatorKey: _rootNavigatorKey,
+            builder: (_, state) => EventFormPage(event: state.extra as SocietyEvent?),
+          ),
+        ],
+      ),
+      // The gate (see restrictedRoutes).
+      GoRoute(
+        path: AppRoutes.gateStaff,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (_, _) => const DailyHelpPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.gateVehicles,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (_, _) => const VehicleSearchPage(),
       ),
       GoRoute(
         path: AppRoutes.facilityBookings,
@@ -235,6 +258,10 @@ final _profileRoutes = <RouteBase>[
   GoRoute(path: 'account', builder: (_, _) => const AccountPage()),
   GoRoute(path: 'edit', builder: (_, _) => const EditProfilePage()),
   GoRoute(path: 'lease', builder: (_, _) => const LeaseInfoPage()),
+  GoRoute(path: 'daily-help', builder: (_, _) => const DailyHelpPage()),
+  GoRoute(path: 'vehicles', builder: (_, _) => const VehiclesPage()),
+  // Admin only (see restrictedRoutes).
+  GoRoute(path: 'residents', builder: (_, _) => const ResidentsPage()),
   // Owners only (see restrictedRoutes). Editing passes the tenancy as `extra`.
   GoRoute(
     path: 'tenant-info',

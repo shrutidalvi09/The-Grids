@@ -81,17 +81,84 @@ class FakeTowerRepository extends TowerRepository {
   final postedComplaints = <ComplaintInput>[];
   final createdNotices = <NoticeInput>[];
   final statusChanges = <(String, ComplaintStatus)>[];
+  final addedVisitors = <VisitorInput>[];
+  final decisions = <(String, bool)>[];
+  final gateChanges = <(String, GateStatus)>[];
+  final cancelledVisitors = <String>[];
+  final createdEvents = <EventInput>[];
+  final deletedEvents = <String>[];
 
   List<Notice> noticeList = [
     Notice(id: 'n1', title: 'Lift maintenance', body: 'Use the service lift.', category: 'Maintenance', isAlert: false, createdAt: _now),
     Notice(id: 'n2', title: 'Fire drill', body: 'Assemble at the main gate.', category: 'Safety', isAlert: false, createdAt: _now),
   ];
 
+  List<Visitor> visitorList = [
+    Visitor(id: 'v1', name: 'Rekha', purpose: 'Maid', type: VisitorType.service, status: VisitorStatus.checkedIn, inTime: _today(9)),
+    const Visitor(id: 'v2', name: 'Amazon', purpose: 'Parcel', type: VisitorType.delivery, status: VisitorStatus.heldAtGate),
+    Visitor(
+      id: 'v3',
+      name: 'Kabir',
+      type: VisitorType.guest,
+      status: VisitorStatus.expected,
+      expectedAt: _today(20),
+      phone: '+919812345678',
+      preApproved: true,
+    ),
+  ];
+
   @override
-  Future<List<Visitor>> visitors({int? limit}) async => [
-        Visitor(id: 'v1', name: 'Rekha', purpose: 'Maid', type: VisitorType.service, status: VisitorStatus.checkedIn, inTime: _today(9)),
-        const Visitor(id: 'v2', name: 'Amazon', purpose: 'Parcel', type: VisitorType.delivery, status: VisitorStatus.heldAtGate),
-      ];
+  Future<List<Visitor>> visitors({int? limit}) async => List.of(visitorList);
+
+  @override
+  Future<Visitor> addVisitor(VisitorInput input) async {
+    addedVisitors.add(input);
+    final v = Visitor(
+      id: 'v${visitorList.length + 1}',
+      name: input.name,
+      purpose: input.purpose,
+      type: input.type,
+      status: VisitorStatus.expected,
+      expectedAt: input.expectedAt,
+      phone: input.phone,
+      preApproved: input.arrival == null,
+      passCode: input.arrival == null ? '482913' : null, // residents get a gate pass
+      flatLabel: input.arrival == null ? null : 'Tower-A, 103',
+    );
+    visitorList = [v, ...visitorList];
+    return v;
+  }
+
+  @override
+  Future<Visitor> decideVisitor(String id, {required bool allow}) async {
+    decisions.add((id, allow));
+    final v = visitorList.firstWhere((v) => v.id == id);
+    visitorList = [
+      for (final x in visitorList)
+        x.id == id
+            ? Visitor(id: x.id, name: x.name, type: x.type, status: allow ? VisitorStatus.checkedIn : VisitorStatus.denied)
+            : x,
+    ];
+    return v;
+  }
+
+  @override
+  Future<Visitor> setVisitorStatus(String id, GateStatus status) async {
+    gateChanges.add((id, status));
+    return visitorList.firstWhere((v) => v.id == id);
+  }
+
+  @override
+  Future<void> cancelVisitor(String id) async {
+    cancelledVisitors.add(id);
+    visitorList = visitorList.where((v) => v.id != id).toList();
+  }
+
+  @override
+  Future<void> createEvent(EventInput input) async => createdEvents.add(input);
+
+  @override
+  Future<void> deleteEvent(String id) async => deletedEvents.add(id);
 
   @override
   Future<List<Notice>> notices({int? limit}) async => noticeList;

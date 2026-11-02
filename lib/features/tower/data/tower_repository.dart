@@ -12,6 +12,8 @@ const _visitorStatuses = {
   'CHECKED_IN': VisitorStatus.checkedIn,
   'CHECKED_OUT': VisitorStatus.checkedOut,
   'HELD_AT_GATE': VisitorStatus.heldAtGate,
+  'PENDING_APPROVAL': VisitorStatus.pendingApproval,
+  'DENIED': VisitorStatus.denied,
 };
 
 Visitor visitorFromJson(Json json) => Visitor(
@@ -20,9 +22,16 @@ Visitor visitorFromJson(Json json) => Visitor(
       purpose: json['purpose'] as String?,
       type: _visitorTypes[json['type']]!,
       status: _visitorStatuses[json['status']]!,
+      phone: json['phone'] as String?,
+      expectedAt: parseTimeOrNull(json['expectedAt']),
+      preApproved: (json['preApproved'] as bool?) ?? false,
       inTime: parseTimeOrNull(json['inTime']),
       outTime: parseTimeOrNull(json['outTime']),
       flatLabel: json['flatLabel'] as String?,
+      flatId: json['flatId'] as String?,
+      passCode: json['passCode'] as String?,
+      vehicleNumber: json['vehicleNumber'] as String?,
+      photoUrl: json['photoUrl'] as String?,
     );
 
 Notice noticeFromJson(Json json) => Notice(
@@ -90,6 +99,19 @@ class TowerRepository {
   Future<List<Visitor>> visitors({int? limit}) => apiCall(() async =>
       parseList((await _dio.get<List<dynamic>>('/visitors', queryParameters: _limit(limit))).data, visitorFromJson));
 
+  Future<Visitor> addVisitor(VisitorInput input) =>
+      apiCall(() async => visitorFromJson((await _dio.post<Json>('/visitors', data: input.toJson())).data!));
+
+  /// The gate (admins) marks arrival, parcel held or exit.
+  Future<Visitor> setVisitorStatus(String id, GateStatus status) => apiCall(() async =>
+      visitorFromJson((await _dio.patch<Json>('/visitors/$id/status', data: {'status': status.apiName})).data!));
+
+  Future<void> cancelVisitor(String id) => apiCall(() => _dio.delete<void>('/visitors/$id'));
+
+  /// The flat allows or denies a walk-in waiting at the gate.
+  Future<Visitor> decideVisitor(String id, {required bool allow}) => apiCall(() async =>
+      visitorFromJson((await _dio.patch<Json>('/visitors/$id/decision', data: {'allow': allow})).data!));
+
   Future<List<Notice>> notices({int? limit}) => apiCall(() async =>
       parseList((await _dio.get<List<dynamic>>('/notices', queryParameters: _limit(limit))).data, noticeFromJson));
 
@@ -117,6 +139,13 @@ class TowerRepository {
 
   Future<void> updateComplaintStatus(String id, ComplaintStatus status) =>
       apiCall(() => _dio.patch<void>('/complaints/$id/status', data: {'status': status.apiName}));
+
+  Future<void> createEvent(EventInput input) => apiCall(() => _dio.post<void>('/events', data: input.toJson()));
+
+  Future<void> updateEvent(String id, EventInput input) =>
+      apiCall(() => _dio.patch<void>('/events/$id', data: input.toJson()));
+
+  Future<void> deleteEvent(String id) => apiCall(() => _dio.delete<void>('/events/$id'));
 
   Future<List<SocietyEvent>> events({int? limit}) => apiCall(() async =>
       parseList((await _dio.get<List<dynamic>>('/events', queryParameters: _limit(limit))).data, eventFromJson));

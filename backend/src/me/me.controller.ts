@@ -1,7 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
-import { Auth, type AuthContext } from '../auth/auth-context.js';
+import { Auth, type AuthContext, Everyone } from '../auth/auth-context.js';
 import { MeService, type MeView } from './me.service.js';
 
+@Everyone()
 @Controller('me')
 export class MeController {
   constructor(private readonly me: MeService) {}

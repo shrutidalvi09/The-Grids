@@ -18,8 +18,15 @@ export const IS_PUBLIC = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC, true);
 
 export const ROLES = 'roles';
-/** Restricts a route to the given roles. */
+/**
+ * Restricts a route to the given roles. Routes without it are open to every
+ * member except guards: a guard only reaches routes that list GUARD here, or
+ * that are marked [Everyone].
+ */
 export const Roles = (...roles: Role[]) => SetMetadata(ROLES, roles);
+
+/** Open to all signed-in members, guards included (profile, notifications…). */
+export const Everyone = () => SetMetadata(ROLES, ['ADMIN', 'OWNER', 'TENANT', 'GUARD'] satisfies Role[]);
 
 /** Injects the caller's AuthContext into a controller method. */
 export const Auth = createParamDecorator((_: unknown, ctx: ExecutionContext): AuthContext => {

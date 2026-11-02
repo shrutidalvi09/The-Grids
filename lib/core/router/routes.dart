@@ -16,6 +16,7 @@ abstract final class AppRoutes {
   // Full-screen pages pushed over the shell
   static const notifications = '/notifications';
   static const events = '/events';
+  static const eventForm = '/events/manage'; // admin; editing passes the event as `extra`
   static const facilityBookings = '/facility-bookings';
   static const help = '/help';
   static const about = '/about';
@@ -50,6 +51,13 @@ abstract final class AppRoutes {
   static const account = '/profile/account';
   static const editProfile = '/profile/edit';
   static const leaseInfo = '/profile/lease'; // tenants: owner contact + lease
+  static const residents = '/profile/residents'; // admin: invite / remove members
+  static const dailyHelp = '/profile/daily-help'; // owners and tenants
+  static const vehicles = '/profile/vehicles'; // residents: own; admin: all + parking slots
+
+  // The gate (guards, and admins standing in)
+  static const gateStaff = '/gate/staff'; // daily help: mark in / out
+  static const gateVehicles = '/gate/vehicles'; // "whose car is this?"
 
   // Role-restricted sections
   static const towerManage = '/tower/manage'; // admin: notice + facility forms

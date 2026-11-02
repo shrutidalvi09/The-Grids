@@ -76,6 +76,8 @@ StatusChip visitorStatusChip(AppLocalizations l10n, VisitorStatus status) => swi
       VisitorStatus.checkedIn => StatusChip(label: l10n.visitorCheckedIn, tone: StatusTone.success),
       VisitorStatus.checkedOut => StatusChip(label: l10n.visitorCheckedOut, tone: StatusTone.info),
       VisitorStatus.heldAtGate => StatusChip(label: l10n.visitorAtGate, tone: StatusTone.warning),
+      VisitorStatus.pendingApproval => StatusChip(label: l10n.visitorAwaitingApproval, tone: StatusTone.warning),
+      VisitorStatus.denied => StatusChip(label: l10n.visitorDenied, tone: StatusTone.danger),
     };
 
 IconData visitorIcon(VisitorType type) => switch (type) {

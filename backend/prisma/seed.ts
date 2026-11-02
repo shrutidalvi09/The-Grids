@@ -88,6 +88,9 @@ const TENANTS = [
 /** The last owner has been invited but has never signed in. */
 const INVITED_OWNER_INDEX = 19;
 
+/** Security at the gate (signs in as "Security Guard"). */
+const GUARD = { name: 'Ramesh Patil', phone: '+919200000001' };
+
 // ───────────────────────────── seed ─────────────────────────────
 
 async function wipe() {
@@ -109,6 +112,9 @@ async function wipe() {
   await prisma.notice.deleteMany();
   await prisma.facilityBooking.deleteMany();
   await prisma.facility.deleteMany();
+  await prisma.sosAlert.deleteMany();
+  await prisma.vehicle.deleteMany();
+  await prisma.dailyHelp.deleteMany(); // cascades to flats and entries
   await prisma.visitor.deleteMany();
   await prisma.householdMember.deleteMany();
   await prisma.serviceProvider.deleteMany();
@@ -178,6 +184,9 @@ async function main() {
   await prisma.membership.create({
     data: { userId: admin.id, societyId, role: 'ADMIN', status: 'ACTIVE' },
   });
+
+  const guard = await prisma.user.create({ data: GUARD });
+  await prisma.membership.create({ data: { userId: guard.id, societyId, role: 'GUARD', status: 'ACTIVE' } });
 
   const tenants = [];
   for (const t of TENANTS) {
@@ -381,15 +390,48 @@ async function main() {
   // Visitors -------------------------------------------------------------------
   await prisma.visitor.createMany({
     data: [
-      { name: 'Rekha', purpose: 'Maid', type: 'SERVICE', status: 'CHECKED_IN', inTime: at(0, 9), flatId: admin.flat.id },
+      // Walk-in waiting for the flat to allow or deny.
+      { name: 'Swiggy', purpose: 'Food delivery', type: 'DELIVERY', status: 'PENDING_APPROVAL', flatId: admin.flat.id },
+      // Pre-approved by Shruti, with a gate pass.
+      { name: 'Kavya', purpose: 'Dinner guest', type: 'GUEST', status: 'EXPECTED', expectedAt: at(0, 20), passCode: '482913', vehicleNumber: 'MH04GH2211', createdById: admin.id, flatId: admin.flat.id },
       { name: 'Cleaner', purpose: 'Housekeeping', type: 'SERVICE', status: 'EXPECTED', flatId: admin.flat.id },
       { name: 'Father-in-law', purpose: 'Guest', type: 'GUEST', status: 'CHECKED_OUT', inTime: at(-1, 20, 10), outTime: at(-1, 22), flatId: admin.flat.id },
       { name: 'Amazon', purpose: 'Parcel', type: 'DELIVERY', status: 'HELD_AT_GATE', inTime: at(0, 10, 30), flatId: admin.flat.id },
       { name: 'Milk vendor', purpose: 'Daily milk', type: 'SERVICE', status: 'CHECKED_OUT', inTime: at(0, 7, 15), outTime: at(0, 7, 20), flatId: admin.flat.id },
-      { name: 'Anita', purpose: 'Cook', type: 'SERVICE', status: 'CHECKED_IN', inTime: at(0, 8, 45), flatId: owners[3].flat.id },
       { name: 'Ravi', purpose: 'Friend', type: 'GUEST', status: 'CHECKED_OUT', inTime: at(-1, 18, 20), outTime: at(-1, 21), flatId: owners[5].flat.id },
       { name: 'Flipkart', purpose: 'Courier', type: 'DELIVERY', status: 'CHECKED_OUT', inTime: at(0, 11, 10), outTime: at(0, 11, 15), flatId: tenants[0].flat.id },
     ].map((v) => ({ ...v, societyId }) as Prisma.VisitorCreateManyInput),
+  });
+
+  // Daily help with gate codes and this month's attendance -----------------
+  const helpers = [
+    { name: 'Rekha Jadhav', kind: 'Maid', phone: '+919300000001', passCode: '24680', flats: [admin.flat.id, owners[2].flat.id], inToday: true },
+    { name: 'Anita Pawar', kind: 'Cook', phone: '+919300000002', passCode: '13579', flats: [admin.flat.id, owners[3].flat.id], inToday: false },
+    { name: 'Suresh Yadav', kind: 'Driver', phone: '+919300000003', passCode: '11223', flats: [owners[1].flat.id], inToday: false },
+  ];
+  for (const [index, h] of helpers.entries()) {
+    const helper = await prisma.dailyHelp.create({
+      data: { societyId, name: h.name, kind: h.kind, phone: h.phone, passCode: h.passCode },
+    });
+    await prisma.dailyHelpFlat.createMany({ data: h.flats.map((flatId) => ({ dailyHelpId: helper.id, flatId })) });
+    const entries = [];
+    for (let d = -(now.getDate() - 1); d < 0; d++) {
+      const day = at(d, 9);
+      if (day.getDay() === 0 || (d + index) % 9 === 0) continue; // Sundays off, the odd missed day
+      entries.push({ dailyHelpId: helper.id, inTime: at(d, 8 + index, 30), outTime: at(d, 10 + index, 15) });
+    }
+    if (h.inToday) entries.push({ dailyHelpId: helper.id, inTime: at(0, 9), outTime: null });
+    await prisma.dailyHelpEntry.createMany({ data: entries });
+  }
+
+  // Vehicles and parking ------------------------------------------------------
+  await prisma.vehicle.createMany({
+    data: [
+      { flatId: admin.flat.id, number: 'MH04AB1234', type: 'CAR', description: 'White Swift', parkingSlot: 'C-12' },
+      { flatId: admin.flat.id, number: 'MH04XY4321', type: 'BIKE', description: 'Black Activa', parkingSlot: 'C-12B' },
+      { flatId: owners[1].flat.id, number: 'MH02CD5678', type: 'CAR', description: 'Grey Creta', parkingSlot: 'A-03' },
+      { flatId: tenants[0].flat.id, number: 'MH05EF9012', type: 'CAR', description: 'Red i20', parkingSlot: null },
+    ].map((v) => ({ ...v, societyId }) as Prisma.VehicleCreateManyInput),
   });
 
   // Facilities and bookings ------------------------------------------------------
@@ -569,7 +611,7 @@ async function main() {
   return { owners, tenants };
 }
 
-const roleLabel: Record<Role, string> = { ADMIN: 'Admin', OWNER: 'Owner', TENANT: 'Tenant' };
+const roleLabel: Record<Role, string> = { ADMIN: 'Admin', OWNER: 'Owner', TENANT: 'Tenant', GUARD: 'Security Guard' };
 
 main()
   .then(async ({ owners, tenants }) => {
@@ -582,6 +624,7 @@ main()
       [roleLabel.OWNER, owners[0].name, owners[0].phone],
       [roleLabel.OWNER, owners[1].name, owners[1].phone],
       [roleLabel.TENANT, tenants[0].name, tenants[0].phone],
+      [roleLabel.GUARD, GUARD.name, GUARD.phone],
       [`${roleLabel.OWNER} (invited)`, owners[INVITED_OWNER_INDEX].name, owners[INVITED_OWNER_INDEX].phone],
     ];
     for (const [role, name, phone] of rows) console.log(`  ${role.padEnd(16)} ${name.padEnd(22)} ${phone}`);

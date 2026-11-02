@@ -32,6 +32,7 @@ const TYPE_TO_PREFERENCE: Record<string, PreferenceKey> = {
   alert: 'emergencyAlerts',
   complaint: 'complaintUpdates',
   visitor: 'visitorArrival',
+  // visitor_approval and sos have no switch: they always arrive.
   parcel: 'packageDelivery',
   staff: 'staffAttendance',
 };

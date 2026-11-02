@@ -14,6 +14,7 @@ import 'package:the_grids/features/auth/domain/user_role.dart';
 import 'package:the_grids/features/auth/presentation/session_controller.dart';
 import 'package:the_grids/features/community/data/community_repository.dart';
 import 'package:the_grids/features/facilities/data/facilities_repository.dart';
+import 'package:the_grids/features/gate/data/gate_repository.dart';
 import 'package:the_grids/features/home/data/home_repository.dart';
 import 'package:the_grids/features/maintenance/data/checkout_launcher.dart';
 import 'package:the_grids/features/maintenance/data/money_repository.dart';
@@ -26,6 +27,7 @@ import 'package:the_grids/features/tower/data/tower_repository.dart';
 import 'community_fakes.dart';
 import 'fakes.dart';
 import 'feature_fakes.dart';
+import 'gate_fakes.dart';
 import 'money_fakes.dart';
 import 'profile_fakes.dart';
 
@@ -43,6 +45,7 @@ Future<ProviderContainer> pumpGridsApp(
   FakeCommunityRepository? community,
   FakeProfileRepository? profile,
   FakeNotificationsRepository? notifications,
+  FakeGateRepository? gate,
   Flavor flavor = Flavor.prod,
   List<Override> overrides = const [],
   Map<String, Object> prefs = const {},
@@ -71,6 +74,7 @@ Future<ProviderContainer> pumpGridsApp(
       communityRepositoryProvider.overrideWithValue(community ?? FakeCommunityRepository()),
       profileRepositoryProvider.overrideWithValue(profile ?? FakeProfileRepository()),
       notificationsRepositoryProvider.overrideWithValue(notifications ?? FakeNotificationsRepository()),
+      gateRepositoryProvider.overrideWithValue(gate ?? FakeGateRepository()),
       responseCacheProvider.overrideWithValue(MemoryResponseCache()),
       // No periodic badge refresh (pending timers fail widget tests).
       unreadPollIntervalProvider.overrideWithValue(null),

@@ -15,8 +15,8 @@ MembershipSummary membership(UserRole role, {String? id, String? flatLabel = 'To
       role: role,
       societyId: testSociety.id,
       societyName: testSociety.name,
-      flatId: role == UserRole.admin ? null : 'f1',
-      flatLabel: role == UserRole.admin ? null : flatLabel,
+      flatId: role.isResident ? 'f1' : null,
+      flatLabel: role.isResident ? flatLabel : null,
     );
 
 AppSession fakeSession(UserRole role, {List<MembershipSummary>? memberships}) {

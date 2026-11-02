@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import { IsDate, IsIn, IsOptional, IsString, Length } from 'class-validator';
-import { Auth, type AuthContext } from '../auth/auth-context.js';
+import { Auth, type AuthContext, Everyone } from '../auth/auth-context.js';
 import { ApiError } from '../common/api-error.js';
 import { LimitQuery } from '../common/queries.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -34,6 +34,7 @@ export interface NotificationView {
 }
 
 /** The bell: your notifications in the society you're signed in to. */
+@Everyone()
 @Controller()
 export class NotificationsController {
   constructor(private readonly prisma: PrismaService) {}

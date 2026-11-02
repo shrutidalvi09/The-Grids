@@ -33,6 +33,10 @@ export interface HomeView {
     flatLabel: string | null;
     createdAt: Date;
   }[];
+  /** Guards: what's waiting at the gate. */
+  gate?: { awaitingApproval: number; expected: number; inside: number; parcels: number; staffInside: number };
+  /** Unresolved SOS alerts the caller should act on (gate, admins, the household). */
+  activeSos?: { id: string; flatLabel: string | null; raisedBy: string | null; raisedByPhone: string | null; createdAt: Date }[];
   /** Owners and tenants. */
   checklist?: ChecklistItem[];
   myBookingsToday?: BookingView[];
@@ -79,7 +83,10 @@ export class HomeService {
       })),
     };
 
-    if (auth.role === 'ADMIN') {
+    home.activeSos = await this.activeSos(auth);
+    if (auth.role === 'GUARD') {
+      home.gate = await this.gateSummary(auth, now);
+    } else if (auth.role === 'ADMIN') {
       Object.assign(home, await this.adminSections(auth));
     } else {
       const startOfDay = zonedToUtc(localDate(now, society.timezone), '00:00', society.timezone);
@@ -94,6 +101,38 @@ export class HomeService {
       home.facilities = facilities;
     }
     return home;
+  }
+
+  private async activeSos(auth: AuthContext): Promise<NonNullable<HomeView['activeSos']>> {
+    const gate = auth.role === 'ADMIN' || auth.role === 'GUARD';
+    if (!gate && !auth.flatId) return [];
+    const alerts = await this.prisma.sosAlert.findMany({
+      where: { societyId: auth.societyId, status: 'ACTIVE', ...(gate ? {} : { flatId: auth.flatId }) },
+      include: { flat: { select: flatLabelSelect }, raisedBy: { select: { name: true, phone: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+    return alerts.map((a) => ({
+      id: a.id,
+      flatLabel: flatLabel(a.flat),
+      raisedBy: a.raisedBy?.name ?? null,
+      raisedByPhone: a.raisedBy?.phone ?? null,
+      createdAt: a.createdAt,
+    }));
+  }
+
+  private async gateSummary(auth: AuthContext, now: Date): Promise<NonNullable<HomeView['gate']>> {
+    const societyId = auth.societyId;
+    const dayAhead = new Date(now.getTime() + 86_400_000);
+    const [awaitingApproval, expected, inside, parcels, staffInside] = await Promise.all([
+      this.prisma.visitor.count({ where: { societyId, status: 'PENDING_APPROVAL' } }),
+      this.prisma.visitor.count({
+        where: { societyId, status: 'EXPECTED', OR: [{ expectedAt: null }, { expectedAt: { lte: dayAhead } }] },
+      }),
+      this.prisma.visitor.count({ where: { societyId, status: 'CHECKED_IN' } }),
+      this.prisma.visitor.count({ where: { societyId, status: 'HELD_AT_GATE' } }),
+      this.prisma.dailyHelpEntry.count({ where: { outTime: null, dailyHelp: { societyId } } }),
+    ]);
+    return { awaitingApproval, expected, inside, parcels, staffInside };
   }
 
   private async adminSections(auth: AuthContext) {
@@ -149,6 +188,18 @@ export class HomeService {
         });
       }
       if (v.status === 'HELD_AT_GATE') items.push({ kind: 'parcel', from: v.name, at: v.inTime });
+    }
+    // Daily help marked in at the gate today.
+    const staff = await this.prisma.dailyHelpEntry.findMany({
+      where: { inTime: { gte: startOfDay }, dailyHelp: { flats: { some: { flatId: auth.flatId } } } },
+      include: { dailyHelp: { select: { name: true, kind: true } } },
+      orderBy: { inTime: 'asc' },
+    });
+    const seen = new Set<string>();
+    for (const e of staff) {
+      if (seen.has(e.dailyHelpId)) continue;
+      seen.add(e.dailyHelpId);
+      items.push({ kind: 'help', status: 'checked_in', name: e.dailyHelp.name, purpose: e.dailyHelp.kind, at: e.inTime });
     }
 
     // Tenants see their rent; owners see maintenance.

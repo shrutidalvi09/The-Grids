@@ -5,6 +5,7 @@ import '../../../core/network/api_call.dart';
 import '../../auth/data/auth_dto.dart' show sessionFromMeJson;
 import '../../auth/data/auth_providers.dart';
 import '../../auth/domain/session.dart';
+import '../../auth/domain/user_role.dart';
 import '../../maintenance/domain/money_models.dart';
 import '../domain/profile_models.dart';
 
@@ -31,6 +32,30 @@ ServiceProvider serviceFromJson(Json json) => ServiceProvider(
       phone: json['phone'] as String,
       location: json['location'] as String?,
       rating: (json['rating'] as num?)?.toDouble(),
+      ratingCount: (json['ratingCount'] as int?) ?? 0,
+      myRating: json['myRating'] as int?,
+    );
+
+Member memberFromJson(Json json) => Member(
+      membershipId: json['membershipId'] as String,
+      name: json['name'] as String,
+      phone: json['phone'] as String,
+      role: UserRole.fromApi(json['role'] as String),
+      invited: json['status'] == 'INVITED',
+      flatId: json['flatId'] as String?,
+      flatLabel: json['flatLabel'] as String?,
+    );
+
+FlatOption flatOptionFromJson(Json json) => FlatOption(
+      id: json['id'] as String,
+      label: json['label'] as String,
+      occupants: [
+        for (final o in json['occupants'] as List<dynamic>) (o as Json)['name'] as String,
+      ],
+      contacts: [
+        for (final o in json['occupants'] as List<dynamic>)
+          if ((o as Json)['phone'] != null) Contact(name: o['name'] as String, phone: o['phone'] as String),
+      ],
     );
 
 Contact _contact(Object? json) => Contact(name: (json as Json)['name'] as String, phone: json['phone'] as String);
@@ -129,6 +154,26 @@ class ProfileRepository {
           }));
 
   Future<void> removeService(String id) => apiCall(() => _dio.delete<void>('/services/$id'));
+
+  Future<ServiceProvider> rateService(String id, int stars) => apiCall(() async =>
+      serviceFromJson((await _dio.put<Json>('/services/$id/rating', data: {'stars': stars})).data!));
+
+  // Admin: managing residents.
+  Future<List<Member>> members() =>
+      apiCall(() async => parseList((await _dio.get<List<dynamic>>('/memberships')).data, memberFromJson));
+
+  Future<List<FlatOption>> flats() =>
+      apiCall(() async => parseList((await _dio.get<List<dynamic>>('/flats')).data, flatOptionFromJson));
+
+  Future<void> invite({required String name, required String phone, required UserRole role, String? flatId}) =>
+      apiCall(() => _dio.post<void>('/memberships/invites', data: {
+            'name': name,
+            'phone': phone,
+            'role': role.apiName,
+            'flatId': ?flatId,
+          }));
+
+  Future<void> removeMember(String membershipId) => apiCall(() => _dio.delete<void>('/memberships/$membershipId'));
 
   Future<SocietyInfo> society() => apiCall(() async => societyFromJson((await _dio.get<Json>('/society')).data!));
 

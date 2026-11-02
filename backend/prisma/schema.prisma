@@ -48,6 +48,9 @@ model Society {
   serviceProviders ServiceProvider[]
   events           Event[]
   notifications    Notification[]
+  dailyHelp        DailyHelp[]
+  sosAlerts        SosAlert[]
+  vehicles         Vehicle[]
 
   @@index([name])
 }
@@ -81,6 +84,9 @@ model Flat {
   complaints  Complaint[]
   dues        Due[]
   tenancies   Tenancy[]
+  dailyHelp   DailyHelpFlat[]
+  sosAlerts   SosAlert[]
+  vehicles    Vehicle[]
 
   @@unique([towerId, number])
   @@index([societyId])
@@ -92,6 +98,7 @@ enum Role {
   ADMIN
   OWNER
   TENANT
+  GUARD // security at the gate; no flat
 }
 
 enum MembershipStatus {
@@ -116,14 +123,14 @@ model User {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  memberships        Membership[]       @relation("MembershipUser")
-  invitedMemberships Membership[]       @relation("MembershipInvitedBy")
+  memberships        Membership[]      @relation("MembershipUser")
+  invitedMemberships Membership[]      @relation("MembershipInvitedBy")
   refreshTokens      RefreshToken[]
   noticesCreated     Notice[]
   complaintsRaised   Complaint[]
   payments           Payment[]
-  tenanciesOwned     Tenancy[]          @relation("TenancyOwner")
-  tenanciesRented    Tenancy[]          @relation("TenancyTenant")
+  tenanciesOwned     Tenancy[]         @relation("TenancyOwner")
+  tenanciesRented    Tenancy[]         @relation("TenancyTenant")
   pollsCreated       Poll[]
   pollVotes          PollVote[]
   communitiesCreated Community[]
@@ -132,6 +139,13 @@ model User {
   facilityBookings   FacilityBooking[]
   notifications      Notification[]
   deviceTokens       DeviceToken[]
+  visitorsCreated    Visitor[]         @relation("VisitorCreatedBy")
+  eventsCreated      Event[]           @relation("EventCreatedBy")
+  serviceRatings     ServiceRating[]
+  visitorsDecided    Visitor[]         @relation("VisitorDecidedBy")
+  dailyHelpAdded     DailyHelpFlat[]
+  sosRaised          SosAlert[]        @relation("SosRaisedBy")
+  sosResolved        SosAlert[]        @relation("SosResolvedBy")
 }
 
 /// A user's role in a society. One user can hold several (e.g. admin + owner)
@@ -230,24 +244,140 @@ enum VisitorStatus {
   CHECKED_IN
   CHECKED_OUT
   HELD_AT_GATE // e.g. parcel waiting at security
+  PENDING_APPROVAL // walk-in at the gate, waiting for the flat to allow or deny
+  DENIED
 }
 
 model Visitor {
-  id        String        @id @default(cuid())
+  id            String        @id @default(cuid())
+  societyId     String
+  flatId        String
+  name          String
+  purpose       String?
+  type          VisitorType
+  status        VisitorStatus @default(EXPECTED)
+  /// Guest's mobile, so the gate can call them (optional).
+  phone         String?
+  /// When a pre-approved visitor is due (resident's estimate).
+  expectedAt    DateTime?
+  inTime        DateTime?
+  outTime       DateTime?
+  /// Resident who pre-approved them; null when the gate logged them.
+  createdById   String?
+  /// One-time gate pass for pre-approved visitors; cleared once used.
+  passCode      String?
+  /// Guest's car or bike, for visitor parking.
+  vehicleNumber String?
+  /// Taken by the guard at the gate.
+  photoUrl      String?
+  /// Resident who allowed or denied a walk-in.
+  decidedById   String?
+  createdAt     DateTime      @default(now())
+
+  society   Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  flat      Flat    @relation(fields: [flatId], references: [id], onDelete: Cascade)
+  createdBy User?   @relation("VisitorCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  decidedBy User?   @relation("VisitorDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
+
+  @@unique([societyId, passCode])
+  @@index([societyId, flatId, createdAt])
+  @@index([societyId, status])
+}
+
+/// Maid, cook, driver… who come every day. One person can work for several
+/// flats; the permanent [passCode] is shown at the gate instead of calling.
+model DailyHelp {
+  id        String   @id @default(cuid())
   societyId String
-  flatId    String
   name      String
-  purpose   String?
-  type      VisitorType
-  status    VisitorStatus @default(EXPECTED)
-  inTime    DateTime?
-  outTime   DateTime?
-  createdAt DateTime      @default(now())
+  /// Maid | Cook | Driver | Nanny | Cleaner | Other
+  kind      String
+  phone     String?
+  passCode  String
+  createdAt DateTime @default(now())
+
+  society Society          @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  flats   DailyHelpFlat[]
+  entries DailyHelpEntry[]
+
+  @@unique([societyId, passCode])
+  @@index([societyId, phone])
+}
+
+model DailyHelpFlat {
+  dailyHelpId String
+  flatId      String
+  addedById   String?
+  createdAt   DateTime @default(now())
+
+  dailyHelp DailyHelp @relation(fields: [dailyHelpId], references: [id], onDelete: Cascade)
+  flat      Flat      @relation(fields: [flatId], references: [id], onDelete: Cascade)
+  addedBy   User?     @relation(fields: [addedById], references: [id], onDelete: SetNull)
+
+  @@id([dailyHelpId, flatId])
+  @@index([flatId])
+}
+
+/// One visit: in at the gate, and out (null while inside).
+model DailyHelpEntry {
+  id          String    @id @default(cuid())
+  dailyHelpId String
+  inTime      DateTime
+  outTime     DateTime?
+
+  dailyHelp DailyHelp @relation(fields: [dailyHelpId], references: [id], onDelete: Cascade)
+
+  @@index([dailyHelpId, inTime])
+}
+
+enum SosStatus {
+  ACTIVE
+  RESOLVED
+}
+
+model SosAlert {
+  id           String    @id @default(cuid())
+  societyId    String
+  flatId       String?
+  raisedById   String?
+  note         String?
+  status       SosStatus @default(ACTIVE)
+  resolvedById String?
+  resolvedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  society    Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  flat       Flat?   @relation(fields: [flatId], references: [id], onDelete: SetNull)
+  raisedBy   User?   @relation("SosRaisedBy", fields: [raisedById], references: [id], onDelete: SetNull)
+  resolvedBy User?   @relation("SosResolvedBy", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([societyId, status])
+}
+
+enum VehicleType {
+  CAR
+  BIKE
+  OTHER
+}
+
+model Vehicle {
+  id          String      @id @default(cuid())
+  societyId   String
+  flatId      String
+  /// Normalised: upper case, no spaces, e.g. MH04AB1234.
+  number      String
+  type        VehicleType
+  /// "White Swift", "Black Activa"…
+  description String?
+  /// Assigned by the admin, e.g. "B1-23".
+  parkingSlot String?
+  createdAt   DateTime    @default(now())
 
   society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
   flat    Flat    @relation(fields: [flatId], references: [id], onDelete: Cascade)
 
-  @@index([societyId, flatId, createdAt])
+  @@unique([societyId, number])
+  @@index([flatId])
 }
 
 model Facility {
@@ -366,19 +496,19 @@ enum DueStatus {
 /// Something a flat owes for a period. `breakdown` is a frozen copy of the
 /// line items at billing time: [{ "label": "Cleaning", "amountPaise": 50000 }].
 model Due {
-  id          String    @id @default(cuid())
-  societyId   String
-  flatId      String
-  type        DueType
-  period      String // "2026-10"
-  amountPaise Int
-  breakdown   Json
-  dueDate     DateTime
-  status      DueStatus @default(PENDING)
-  paidAt      DateTime?
+  id             String    @id @default(cuid())
+  societyId      String
+  flatId         String
+  type           DueType
+  period         String // "2026-10"
+  amountPaise    Int
+  breakdown      Json
+  dueDate        DateTime
+  status         DueStatus @default(PENDING)
+  paidAt         DateTime?
   /// Last "please pay" reminder from the admin (one per day at most).
   lastRemindedAt DateTime?
-  createdAt   DateTime  @default(now())
+  createdAt      DateTime  @default(now())
 
   society  Society   @relation(fields: [societyId], references: [id], onDelete: Cascade)
   flat     Flat      @relation(fields: [flatId], references: [id], onDelete: Cascade)
@@ -571,12 +701,29 @@ model ServiceProvider {
   name      String
   phone     String
   location  String?
+  /// Starting rating set by the admin; residents' ratings take over once there are any.
   rating    Float?
   createdAt DateTime @default(now())
 
-  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  society Society         @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  ratings ServiceRating[]
 
   @@index([societyId, category])
+}
+
+/// One rating per resident per service provider (they can change it).
+model ServiceRating {
+  id        String   @id @default(cuid())
+  serviceId String
+  userId    String
+  stars     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service ServiceProvider @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, userId])
 }
 
 model Event {
@@ -588,9 +735,11 @@ model Event {
   imageUrl    String?
   startsAt    DateTime
   endsAt      DateTime?
+  createdById String?
   createdAt   DateTime  @default(now())
 
-  society Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  society   Society @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  createdBy User?   @relation("EventCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([societyId, startsAt])
 }

@@ -8,6 +8,9 @@ import '../../helpers/fakes.dart';
 
 SignedIn _as(UserRole role) => SignedIn(fakeSession(role));
 
+/// Everyone but guards, who only get the gate screens.
+const _members = [UserRole.admin, UserRole.owner, UserRole.tenant];
+
 void main() {
   group('resolveRedirect', () {
     test('while restoring (or after a failed restore), everything goes to splash', () {
@@ -34,7 +37,7 @@ void main() {
     });
 
     test('every role can open the five tabs', () {
-      for (final role in UserRole.values) {
+      for (final role in _members) {
         for (final tab in [
           AppRoutes.home,
           AppRoutes.tower,
@@ -66,7 +69,7 @@ void main() {
       expect(resolveRedirect(location: pay, session: _as(UserRole.tenant)), isNull);
       expect(resolveRedirect(location: pay, session: _as(UserRole.admin)), AppRoutes.home);
       // Receipts and history are scoped server-side, so every role may open them.
-      for (final role in UserRole.values) {
+      for (final role in _members) {
         expect(resolveRedirect(location: AppRoutes.receipt('p1'), session: _as(role)), isNull);
         expect(resolveRedirect(location: AppRoutes.paymentHistory, session: _as(role)), isNull);
       }
@@ -78,7 +81,7 @@ void main() {
         expect(resolveRedirect(location: path, session: _as(UserRole.owner)), AppRoutes.home, reason: path);
         expect(resolveRedirect(location: path, session: _as(UserRole.tenant)), AppRoutes.home, reason: path);
       }
-      for (final role in UserRole.values) {
+      for (final role in _members) {
         expect(resolveRedirect(location: AppRoutes.communityPolls, session: _as(role)), isNull);
         expect(resolveRedirect(location: AppRoutes.communityClub('c1'), session: _as(role)), isNull);
       }
@@ -93,11 +96,47 @@ void main() {
       expect(resolveRedirect(location: AppRoutes.leaseInfo, session: _as(UserRole.tenant)), isNull);
       expect(resolveRedirect(location: AppRoutes.leaseInfo, session: _as(UserRole.owner)), AppRoutes.home);
       expect(resolveRedirect(location: AppRoutes.tenantForm, session: _as(UserRole.tenant)), AppRoutes.home);
-      for (final role in UserRole.values) {
+      for (final role in _members) {
         for (final path in [AppRoutes.services, AppRoutes.account, AppRoutes.notificationSettings, AppRoutes.help, AppRoutes.about]) {
           expect(resolveRedirect(location: path, session: _as(role)), isNull, reason: '$role $path');
         }
       }
+    });
+
+    test('guards only reach the gate, notices, events and their own settings', () {
+      final guard = _as(UserRole.guard);
+      for (final path in [
+        AppRoutes.home,
+        AppRoutes.tower,
+        AppRoutes.towerVisitors,
+        AppRoutes.towerNotices,
+        AppRoutes.profile,
+        AppRoutes.languageSettings,
+        AppRoutes.notifications,
+        AppRoutes.events,
+        AppRoutes.gateStaff,
+        AppRoutes.gateVehicles,
+      ]) {
+        expect(resolveRedirect(location: path, session: guard), isNull, reason: path);
+      }
+      for (final path in [
+        AppRoutes.maintenance,
+        AppRoutes.community,
+        AppRoutes.towerComplaints,
+        AppRoutes.towerNeighbours,
+        AppRoutes.towerFacilities,
+        AppRoutes.household,
+        AppRoutes.dailyHelp,
+        AppRoutes.vehicles,
+        AppRoutes.paymentHistory,
+        AppRoutes.residents,
+        AppRoutes.facilityBookings,
+      ]) {
+        expect(resolveRedirect(location: path, session: guard), AppRoutes.home, reason: path);
+      }
+      // Residents don't get the gate screens.
+      expect(resolveRedirect(location: AppRoutes.gateStaff, session: _as(UserRole.owner)), AppRoutes.home);
+      expect(resolveRedirect(location: AppRoutes.gateVehicles, session: _as(UserRole.admin)), isNull);
     });
 
     test('tenant info is owner-only', () {

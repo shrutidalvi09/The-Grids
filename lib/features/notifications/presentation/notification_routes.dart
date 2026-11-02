@@ -9,7 +9,9 @@ String? routeForNotification(String type, Map<String, String> data, UserRole rol
       'poll' => AppRoutes.communityPolls,
       'announcement' => data['communityId'] == null ? AppRoutes.community : AppRoutes.communityClub(data['communityId']!),
       'complaint' => AppRoutes.towerComplaints,
-      'visitor' || 'parcel' || 'staff' => AppRoutes.towerVisitors,
+      'visitor' || 'parcel' || 'visitor_approval' || 'visitor_decision' => AppRoutes.towerVisitors,
+      'staff' => role.isGate ? AppRoutes.gateStaff : AppRoutes.dailyHelp,
+      'sos' => AppRoutes.home,
       'tenancy' => role == UserRole.owner ? AppRoutes.tenantInfo : AppRoutes.leaseInfo,
       _ => null,
     };

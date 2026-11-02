@@ -20,9 +20,11 @@ dependencies:
   go_router: ^18.1.1
   image_picker: ^1.2.4
   intl: any
+  mobile_scanner: ^7.4.2
   open_filex: ^5.0.0
   package_info_plus: ^10.2.2
   path_provider: ^2.1.6
+  qr_flutter: ^4.1.0
   razorpay_flutter: ^1.4.7
   share_plus: ^13.3.1
   shared_preferences: ^2.5.6

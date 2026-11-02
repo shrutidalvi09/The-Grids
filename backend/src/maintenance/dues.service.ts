@@ -1,11 +1,9 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import type { AuthContext } from '../auth/auth-context.js';
 import { ApiError } from '../common/api-error.js';
-import { inr } from '../common/money.js';
 import { flatLabel, flatLabelSelect } from '../common/queries.js';
 import { localDate, zonedToUtc } from '../common/zoned-time.js';
 import type { BillStatus, DueStatus, DueType } from '../generated/prisma/enums.js';
-import { periodLabel } from '../payments/receipt-pdf.js';
 import type { BreakdownItem } from '../payments/payments.service.js';
 import { NotificationsService } from '../notifications/notifications.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -167,8 +165,14 @@ export class DuesService {
           await this.notifications.flatResidentIds(societyId, row.flatId, [isRent ? 'TENANT' : 'OWNER']),
           {
             type: 'due',
-            title: isRent ? 'Rent due' : 'Maintenance due',
-            body: `${inr(row.amountPaise)} for ${periodLabel(month)} is due on ${localDate(row.dueDate, society.timezone)}.`,
+            message: {
+              key: 'due',
+              dueType: row.type,
+              amountPaise: row.amountPaise,
+              period: month,
+              dueDate: row.dueDate,
+              timezone: society.timezone,
+            },
             data: { period: month, dueType: row.type },
           },
         );
@@ -254,15 +258,13 @@ export class DuesService {
       select: { userId: true },
     });
     const total = dues.reduce((sum, d) => sum + d.amountPaise, 0);
-    const periods = dues.map((d) => periodLabel(d.period)).join(', ');
     await this.prisma.due.updateMany({ where: { id: { in: dues.map((d) => d.id) } }, data: { lastRemindedAt: now } });
     const notified = await this.notifications.notify(
       societyId,
       owners.map((o) => o.userId),
       {
         type: 'due_reminder',
-        title: 'Maintenance reminder',
-        body: `Your maintenance of ${inr(total)} for ${periods} is pending. Please pay from the Maintenance tab.`,
+        message: { key: 'due_reminder', amountPaise: total, periods: dues.map((d) => d.period) },
         data: { flatId },
       },
     );
